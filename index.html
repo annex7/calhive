@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CalHive — Free Global Calculators for Every Part of Life</title>
+<meta name="description" content="23 free calculators for money, health, home, travel and life. Tax, mortgage, calories, BMI, road trips and more. Works globally with any currency.">
+<meta name="theme-color" content="#0a0a0b">
+<link rel="manifest" href="manifest.json">
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* Homepage specific */
+  .hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5rem 1.5rem 3rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--money);
+    border: 1px solid color-mix(in srgb, var(--money) 30%, transparent);
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--money);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-size: clamp(2.8rem, 8vw, 5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.0;
+    margin-bottom: 1.2rem;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+
+  h1 em {
+    font-style: normal;
+    position: relative;
+    display: inline-block;
+  }
+
+  h1 em::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; left: 0; right: 0;
+    height: 4px;
+    background: var(--money);
+    border-radius: 2px;
+  }
+
+  .hero-sub {
+    font-family: var(--font-mono);
+    font-size: clamp(0.8rem, 2vw, 0.95rem);
+    color: var(--text2);
+    max-width: 520px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+    animation: fadeUp 0.5s 0.15s ease both;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 4rem;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--money);
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Category sections */
+  .categories {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+  }
+
+  .category-section {
+    margin-bottom: 3.5rem;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .category-icon {
+    font-size: 1.2rem;
+  }
+
+  .category-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .category-count {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .calc-card {
+    display: block;
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.3rem;
+    transition: border-color 0.15s, transform 0.15s, background 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .calc-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--cat-color);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .calc-card:hover {
+    border-color: var(--cat-color);
+    background: var(--surface2);
+    transform: translateY(-2px);
+  }
+
+  .calc-card:hover::before { opacity: 1; }
+
+  .card-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: var(--text);
+  }
+
+  .card-desc {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .card-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 1rem;
+    transition: color 0.15s, transform 0.15s;
+  }
+
+  .calc-card:hover .card-arrow {
+    color: var(--cat-color);
+    transform: translateY(-50%) translateX(3px);
+  }
+
+  /* Background glow effects */
+  .glow-money { background: radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--money) 8%, transparent) 0%, transparent 60%); }
+  .glow-home { background: radial-gradient(ellipse at 70% 20%, color-mix(in srgb, var(--home) 8%, transparent) 0%, transparent 60%); }
+  .glow-health { background: radial-gradient(ellipse at 20% 60%, color-mix(in srgb, var(--health) 8%, transparent) 0%, transparent 60%); }
+  .glow-travel { background: radial-gradient(ellipse at 80% 60%, color-mix(in srgb, var(--travel) 8%, transparent) 0%, transparent 60%); }
+  .glow-life { background: radial-gradient(ellipse at 50% 80%, color-mix(in srgb, var(--life) 8%, transparent) 0%, transparent 60%); }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, color-mix(in srgb, var(--money) 10%, transparent) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, color-mix(in srgb, var(--home) 6%, transparent) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 3rem 1rem 2rem; }
+    .hero-stats { gap: 1.2rem; }
+    .stat-num { font-size: 1.4rem; }
+    .categories { padding: 0 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">Cal<span>Hive</span></a>
+    <ul class="nav-links">
+      <li><a href="money/take-home-pay.html" class="money">💰 Money</a></li>
+      <li><a href="home/energy-bill.html" class="home-cat">🏠 Home</a></li>
+      <li><a href="health/bmi.html" class="health">🏋️ Health</a></li>
+      <li><a href="travel/cost-per-mile.html" class="travel">🚗 Travel</a></li>
+      <li><a href="life-work/freelance-rate.html" class="life">⏱️ Life & Work</a></li>
+    </ul>
+    <div id="currency-selector"></div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-tag">🌍 Works in every country, every currency</div>
+  <h1>Calculate <em>anything</em><br>in your life</h1>
+  <p class="hero-sub">23 free, instant calculators for money, health, home, travel and work. No sign-up. No ads blocking your results. Just answers.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">23</div>
+      <div class="stat-label">Calculators</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">15+</div>
+      <div class="stat-label">Currencies</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Free</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0</div>
+      <div class="stat-label">Sign-ups</div>
+    </div>
+  </div>
+</section>
+
+<!-- AD SLOT TOP -->
+<div style="max-width:1200px;margin:0 auto;padding:0 1.5rem;">
+  <div class="ad-slot leaderboard">[ Advertisement ]</div>
+</div>
+
+<!-- CALCULATORS -->
+<section class="categories">
+
+  <!-- MONEY -->
+  <div class="category-section glow-money" style="padding:1.5rem;border-radius:16px;margin-bottom:2.5rem;">
+    <div class="category-header">
+      <span class="category-icon">💰</span>
+      <span class="category-name" style="color:var(--money)">Money</span>
+      <span class="category-count">6 calculators</span>
+    </div>
+    <div class="calc-grid">
+      <a href="money/take-home-pay.html" class="calc-card" style="--cat-color:var(--money)">
+        <div class="card-name">Take-Home Pay</div>
+        <div class="card-desc">Salary → after tax & deductions</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="money/mortgage.html" class="calc-card" style="--cat-color:var(--money)">
+        <div class="card-name">Mortgage Repayment</div>
+        <div class="card-desc">Loan, rate, term → monthly payment</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="money/savings-goal.html" class="calc-card" style="--cat-color:var(--money)">
+        <div class="card-name">Savings Goal</div>
+        <div class="card-desc">Target amount → time to reach it</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="money/compound-interest.html" class="calc-card" style="--cat-color:var(--money)">
+        <div class="card-name">Compound Interest</div>
+        <div class="card-desc">Lump sum + monthly → growth over years</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="money/loan-repayment.html" class="calc-card" style="--cat-color:var(--money)">
+        <div class="card-name">Loan Repayment</div>
+        <div class="card-desc">Amount, rate, term → monthly cost</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="money/rent-vs-buy.html" class="calc-card" style="--cat-color:var(--money)">
+        <div class="card-name">Rent vs Buy</div>
+        <div class="card-desc">True cost comparison over time</div>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="category-section glow-home" style="padding:1.5rem;border-radius:16px;margin-bottom:2.5rem;">
+    <div class="category-header">
+      <span class="category-icon">🏠</span>
+      <span class="category-name" style="color:var(--home)">Home</span>
+      <span class="category-count">4 calculators</span>
+    </div>
+    <div class="calc-grid">
+      <a href="home/energy-bill.html" class="calc-card" style="--cat-color:var(--home)">
+        <div class="card-name">Energy Bill</div>
+        <div class="card-desc">Appliances + usage → monthly cost</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="home/paint-coverage.html" class="calc-card" style="--cat-color:var(--home)">
+        <div class="card-name">Paint Coverage</div>
+        <div class="card-desc">Room dimensions → tins needed</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="home/moving-cost.html" class="calc-card" style="--cat-color:var(--home)">
+        <div class="card-name">Moving Cost</div>
+        <div class="card-desc">Distance & volume → removal estimate</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="home/bills-splitter.html" class="calc-card" style="--cat-color:var(--home)">
+        <div class="card-name">Bills Splitter</div>
+        <div class="card-desc">Household costs → fair split per person</div>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- HEALTH -->
+  <div class="category-section glow-health" style="padding:1.5rem;border-radius:16px;margin-bottom:2.5rem;">
+    <div class="category-header">
+      <span class="category-icon">🏋️</span>
+      <span class="category-name" style="color:var(--health)">Health</span>
+      <span class="category-count">7 calculators</span>
+    </div>
+    <div class="calc-grid">
+      <a href="health/bmi.html" class="calc-card" style="--cat-color:var(--health)">
+        <div class="card-name">BMI & Healthy Weight</div>
+        <div class="card-desc">Height, weight → BMI + ideal range</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="health/calorie-target.html" class="calc-card" style="--cat-color:var(--health)">
+        <div class="card-name">Daily Calorie Target</div>
+        <div class="card-desc">Age, weight, activity, goal → calories</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="health/food-calories.html" class="calc-card" style="--cat-color:var(--health)">
+        <div class="card-name">Food Calorie Lookup</div>
+        <div class="card-desc">Search a food → calories per portion</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="health/calorie-distribution.html" class="calc-card" style="--cat-color:var(--health)">
+        <div class="card-name">Calorie Distribution</div>
+        <div class="card-desc">Your calories → meal-by-meal split</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="health/macro-calculator.html" class="calc-card" style="--cat-color:var(--health)">
+        <div class="card-name">Macro Calculator</div>
+        <div class="card-desc">Calories + goal → protein, carbs, fat</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="health/protein-calculator.html" class="calc-card" style="--cat-color:var(--health)">
+        <div class="card-name">Protein by Body Weight</div>
+        <div class="card-desc">Weight + activity → daily protein target</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="health/water-intake.html" class="calc-card" style="--cat-color:var(--health)">
+        <div class="card-name">Water Intake</div>
+        <div class="card-desc">Weight + activity → daily water target</div>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- TRAVEL -->
+  <div class="category-section glow-travel" style="padding:1.5rem;border-radius:16px;margin-bottom:2.5rem;">
+    <div class="category-header">
+      <span class="category-icon">🚗</span>
+      <span class="category-name" style="color:var(--travel)">Travel</span>
+      <span class="category-count">3 calculators</span>
+    </div>
+    <div class="calc-grid">
+      <a href="travel/cost-per-mile.html" class="calc-card" style="--cat-color:var(--travel)">
+        <div class="card-name">Cost Per Mile / km</div>
+        <div class="card-desc">Full car running cost breakdown</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="travel/road-trip.html" class="calc-card" style="--cat-color:var(--travel)">
+        <div class="card-name">Road Trip Cost</div>
+        <div class="card-desc">Distance, MPG, fuel price → trip total</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="travel/trip-budget.html" class="calc-card" style="--cat-color:var(--travel)">
+        <div class="card-name">Trip Budget Planner</div>
+        <div class="card-desc">Days, style, destination → full budget</div>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- LIFE & WORK -->
+  <div class="category-section glow-life" style="padding:1.5rem;border-radius:16px;">
+    <div class="category-header">
+      <span class="category-icon">⏱️</span>
+      <span class="category-name" style="color:var(--life)">Life & Work</span>
+      <span class="category-count">3 calculators</span>
+    </div>
+    <div class="calc-grid">
+      <a href="life-work/freelance-rate.html" class="calc-card" style="--cat-color:var(--life)">
+        <div class="card-name">Freelance Rate</div>
+        <div class="card-desc">Income target → hourly rate to charge</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="life-work/true-hourly-wage.html" class="calc-card" style="--cat-color:var(--life)">
+        <div class="card-name">True Hourly Wage</div>
+        <div class="card-desc">Salary + work costs → what you actually earn</div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a href="life-work/pension-pot.html" class="calc-card" style="--cat-color:var(--life)">
+        <div class="card-name">Pension Pot</div>
+        <div class="card-desc">Age, contributions → projected retirement pot</div>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- AD SLOT BOTTOM -->
+  <div class="ad-slot rectangle" style="margin-top:2rem;">[ Advertisement ]</div>
+
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <p>© 2026 <a href="index.html">CalHive.net</a> — Free calculators for everyone, everywhere.
+    <br>Results are estimates only. Always consult a professional for financial or medical decisions.</p>
+  </div>
+</footer>
+
+<script src="assets/js/utils.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "CalHive — Global Calculators",
+  "short_name": "CalHive",
+  "description": "23 free calculators for money, health, home, travel and life. Works globally.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0b",
+  "theme_color": "#c8f135",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230a0a0b'/><text x='96' y='130' font-size='100' text-anchor='middle'>🐝</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["finance", "health", "utilities"],
+  "screenshots": []
+}
