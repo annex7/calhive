@@ -8,7 +8,481 @@
 <meta name="theme-color" content="#0a0a0b">
 <link rel="manifest" href="manifest.json">
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>
-<link rel="stylesheet" href="/calhive/assets/css/style.css">
+<style>/* ============================================
+   CALHIVE.NET — Global Calculator Hub
+   Shared Stylesheet
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0b;
+  --surface: #141416;
+  --surface2: #1c1c1f;
+  --border: #272729;
+  --border2: #333336;
+  --text: #f0f0ec;
+  --text2: #a0a0a8;
+  --muted: #606068;
+
+  /* Category accents */
+  --money: #c8f135;
+  --home: #5eb8ff;
+  --health: #ff7f5e;
+  --travel: #f1d435;
+  --life: #b388ff;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-display);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── NAVIGATION ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,10,11,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  gap: 1rem;
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.logo span { color: var(--money); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-links::-webkit-scrollbar { display: none; }
+
+.nav-links a {
+  display: block;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--muted);
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-links a:hover { color: var(--text); background: var(--surface2); }
+.nav-links a.money:hover { color: var(--money); }
+.nav-links a.home-cat:hover { color: var(--home); }
+.nav-links a.health:hover { color: var(--health); }
+.nav-links a.travel:hover { color: var(--travel); }
+.nav-links a.life:hover { color: var(--life); }
+
+/* ── CALCULATOR PAGE LAYOUT ── */
+.calc-page {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 2rem 1rem 5rem;
+}
+
+.calc-header {
+  margin-bottom: 2rem;
+}
+
+.breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.breadcrumb a { color: var(--muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--text2); }
+
+.calc-title {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 0.5rem;
+}
+
+.calc-desc {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* ── SECTIONS ── */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem 1.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.section-icon {
+  font-size: 1rem;
+  width: 30px; height: 30px;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface2);
+}
+
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text2);
+}
+
+/* ── FIELDS ── */
+.field { margin-bottom: 1rem; }
+.field:last-child { margin-bottom: 0; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.prefix, .suffix {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.prefix { left: 11px; }
+.suffix { right: 11px; }
+
+input[type="number"],
+input[type="text"],
+select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  padding: 0.6rem 0.8rem;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  appearance: none;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+input.has-prefix { padding-left: 1.8rem; }
+input.has-suffix { padding-right: 2.2rem; }
+
+input:focus, select:focus {
+  border-color: var(--accent, var(--money));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--money)) 15%, transparent);
+}
+
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23606068' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 2rem;
+}
+
+/* Toggle buttons */
+.toggle-group {
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 3px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.toggle-btn.active {
+  background: var(--accent, var(--money));
+  color: #0a0a0b;
+  font-weight: 500;
+}
+
+/* ── RESULT CARD ── */
+.result-card {
+  border-radius: var(--radius);
+  padding: 1.6rem 1.5rem;
+  margin-top: 1.2rem;
+  position: relative;
+  overflow: hidden;
+  background: var(--accent, var(--money));
+  color: #0a0a0b;
+}
+
+.result-card::after {
+  content: '';
+  position: absolute;
+  right: -30px; bottom: -30px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.08);
+}
+
+.result-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 0.3rem;
+}
+
+.result-value {
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  position: relative;
+  z-index: 1;
+}
+
+.result-sub {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  opacity: 0.55;
+  margin-top: 0.4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.result-grid {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.result-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.result-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.result-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+.result-item {
+  background: rgba(0,0,0,0.12);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+}
+
+.result-item .ri-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.result-item .ri-value {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-top: 0.15rem;
+}
+
+/* ── INFO NOTE ── */
+.info-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.info-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent, var(--money));
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.info-note p {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.info-note strong { color: var(--text); font-weight: 500; }
+
+/* ── AD SLOTS ── */
+.ad-slot {
+  width: 100%;
+  background: var(--surface);
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 1rem 0;
+}
+
+.ad-slot.leaderboard { height: 90px; }
+.ad-slot.rectangle { height: 250px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+footer p {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+footer a { color: var(--text2); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  animation: fadeUp 0.4s ease both;
+}
+
+.fade-up-1 { animation-delay: 0.05s; }
+.fade-up-2 { animation-delay: 0.1s; }
+.fade-up-3 { animation-delay: 0.15s; }
+.fade-up-4 { animation-delay: 0.2s; }
+.fade-up-5 { animation-delay: 0.25s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .field-row { grid-template-columns: 1fr; }
+  .result-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+  .result-grid.cols-4 { grid-template-columns: 1fr 1fr; }
+  .nav-links { display: none; }
+}
+</style>
 <style>
   /* Homepage specific */
   .hero {
@@ -467,6 +941,172 @@
   </div>
 </footer>
 
-<script src="/calhive/assets/js/utils.js"></script>
+<script>/* ============================================
+   CALHIVE.NET — Shared JavaScript Utilities
+   ============================================ */
+
+// ── CURRENCY CONFIG ──
+const CURRENCIES = {
+  USD: { symbol: '$', name: 'US Dollar', locale: 'en-US' },
+  GBP: { symbol: '£', name: 'British Pound', locale: 'en-GB' },
+  EUR: { symbol: '€', name: 'Euro', locale: 'de-DE' },
+  INR: { symbol: '₹', name: 'Indian Rupee', locale: 'en-IN' },
+  CAD: { symbol: 'CA$', name: 'Canadian Dollar', locale: 'en-CA' },
+  AUD: { symbol: 'A$', name: 'Australian Dollar', locale: 'en-AU' },
+  NGN: { symbol: '₦', name: 'Nigerian Naira', locale: 'en-NG' },
+  JPY: { symbol: '¥', name: 'Japanese Yen', locale: 'ja-JP' },
+  CNY: { symbol: '¥', name: 'Chinese Yuan', locale: 'zh-CN' },
+  BRL: { symbol: 'R$', name: 'Brazilian Real', locale: 'pt-BR' },
+  ZAR: { symbol: 'R', name: 'South African Rand', locale: 'en-ZA' },
+  MXN: { symbol: 'MX$', name: 'Mexican Peso', locale: 'es-MX' },
+  SGD: { symbol: 'S$', name: 'Singapore Dollar', locale: 'en-SG' },
+  AED: { symbol: 'AED', name: 'UAE Dirham', locale: 'ar-AE' },
+  KES: { symbol: 'KSh', name: 'Kenyan Shilling', locale: 'en-KE' },
+};
+
+// Detect user currency from browser locale
+function detectCurrency() {
+  const saved = localStorage.getItem('calhive_currency');
+  if (saved && CURRENCIES[saved]) return saved;
+  const locale = navigator.language || 'en-US';
+  const map = {
+    'en-GB': 'GBP', 'en-US': 'USD', 'en-IN': 'INR',
+    'en-CA': 'CAD', 'en-AU': 'AUD', 'en-NG': 'NGN',
+    'en-ZA': 'ZAR', 'en-KE': 'KES', 'en-SG': 'SGD',
+    'de': 'EUR', 'fr': 'EUR', 'es': 'EUR', 'it': 'EUR',
+    'pt-BR': 'BRL', 'ja': 'JPY', 'zh': 'CNY', 'ar-AE': 'AED',
+    'es-MX': 'MXN',
+  };
+  for (const [key, val] of Object.entries(map)) {
+    if (locale.startsWith(key)) return val;
+  }
+  return 'USD';
+}
+
+let currentCurrency = detectCurrency();
+
+function getCurrencySymbol() { return CURRENCIES[currentCurrency]?.symbol || '$'; }
+
+function formatMoney(amount, decimals = 0) {
+  if (isNaN(amount) || amount === null) return '—';
+  const sym = getCurrencySymbol();
+  const abs = Math.abs(amount);
+  let formatted;
+  if (abs >= 1000000) formatted = (amount / 1000000).toFixed(1) + 'M';
+  else if (abs >= 1000) formatted = amount.toLocaleString(undefined, { maximumFractionDigits: decimals });
+  else formatted = amount.toFixed(decimals);
+  return sym + formatted;
+}
+
+function formatNumber(n, decimals = 1) {
+  if (isNaN(n)) return '—';
+  return n.toLocaleString(undefined, { maximumFractionDigits: decimals });
+}
+
+// ── CURRENCY SELECTOR BUILDER ──
+function buildCurrencySelector(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  let html = `<select id="currency-select" onchange="changeCurrency(this.value)" style="font-size:0.75rem;padding:0.4rem 1.8rem 0.4rem 0.6rem;">`;
+  for (const [code, info] of Object.entries(CURRENCIES)) {
+    html += `<option value="${code}" ${code === currentCurrency ? 'selected' : ''}>${info.symbol} ${code}</option>`;
+  }
+  html += '</select>';
+  el.innerHTML = html;
+}
+
+function changeCurrency(code) {
+  currentCurrency = code;
+  localStorage.setItem('calhive_currency', code);
+  if (typeof calculate === 'function') calculate();
+  // Update all prefix symbols on page
+  document.querySelectorAll('.currency-symbol').forEach(el => {
+    el.textContent = getCurrencySymbol();
+  });
+}
+
+// ── UNIT SYSTEM ──
+let unitSystem = localStorage.getItem('calhive_units') || 'metric';
+
+function setUnit(system) {
+  unitSystem = system;
+  localStorage.setItem('calhive_units', system);
+  document.querySelectorAll('.toggle-btn[data-unit]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.unit === system);
+  });
+  if (typeof onUnitChange === 'function') onUnitChange(system);
+  if (typeof calculate === 'function') calculate();
+}
+
+// ── HELPERS ──
+function v(id) {
+  const el = document.getElementById(id);
+  if (!el) return 0;
+  return parseFloat(el.value) || 0;
+}
+
+function sv(id) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+  return el.value || '';
+}
+
+function setResult(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function showElement(id, show = true) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = show ? '' : 'none';
+}
+
+// ── NAV ACTIVE STATE ──
+document.addEventListener('DOMContentLoaded', () => {
+  const path = window.location.pathname;
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    if (a.getAttribute('href') && path.includes(a.getAttribute('href').replace('../', '').replace('.html', ''))) {
+      a.style.color = 'var(--text)';
+    }
+  });
+
+  // Init currency selectors on page
+  buildCurrencySelector('currency-selector');
+
+  // Init unit toggles
+  document.querySelectorAll('.toggle-btn[data-unit]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.unit === unitSystem);
+    btn.addEventListener('click', () => setUnit(btn.dataset.unit));
+  });
+});
+
+// ── SHARED NAV HTML ──
+function getNav(active = '') {
+  return `
+  <nav>
+    <div class="nav-inner">
+      <a href="../index.html" class="logo">Cal<span>Hive</span></a>
+      <ul class="nav-links">
+        <li><a href="../money/take-home-pay.html" class="money">💰 Money</a></li>
+        <li><a href="../home/energy-bill.html" class="home-cat">🏠 Home</a></li>
+        <li><a href="../health/bmi.html" class="health">🏋️ Health</a></li>
+        <li><a href="../travel/cost-per-mile.html" class="travel">🚗 Travel</a></li>
+        <li><a href="../life-work/freelance-rate.html" class="life">⏱️ Life & Work</a></li>
+      </ul>
+      <div id="currency-selector"></div>
+    </div>
+  </nav>`;
+}
+
+function getFooter() {
+  return `
+  <footer>
+    <div class="footer-inner">
+      <p>© 2026 <a href="../index.html">CalHive.net</a> — Free calculators for everyone, everywhere.
+      <br>Results are estimates only. Always consult a professional for financial or medical decisions.</p>
+    </div>
+  </footer>`;
+}
+</script>
 </body>
 </html>
