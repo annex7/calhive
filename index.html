@@ -3,1109 +3,1205 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CalHive — Free Global Calculators for Every Part of Life</title>
-<meta name="description" content="23 free calculators for money, health, home, travel and life. Tax, mortgage, calories, BMI, road trips and more. Works globally with any currency.">
-<meta name="theme-color" content="#0a0a0b">
-<link rel="manifest" href="manifest.json">
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>
-<style>/* ============================================
-   CALHIVE.NET — Global Calculator Hub
-   Shared Stylesheet
-   ============================================ */
-
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap');
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #0a0a0b;
-  --surface: #141416;
-  --surface2: #1c1c1f;
-  --border: #272729;
-  --border2: #333336;
-  --text: #f0f0ec;
-  --text2: #a0a0a8;
-  --muted: #606068;
-
-  /* Category accents */
-  --money: #c8f135;
-  --home: #5eb8ff;
-  --health: #ff7f5e;
-  --travel: #f1d435;
-  --life: #b388ff;
-
-  --radius: 12px;
-  --radius-sm: 8px;
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'DM Mono', monospace;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-display);
-  min-height: 100vh;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── NOISE TEXTURE OVERLAY ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.4;
-}
-
-/* ── NAVIGATION ── */
-nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(10,10,11,0.92);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 1.5rem;
-}
-
-.nav-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 60px;
-  gap: 1rem;
-}
-
-.logo {
-  font-size: 1.3rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  text-decoration: none;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex-shrink: 0;
-}
-
-.logo span { color: var(--money); }
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
-  list-style: none;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.nav-links::-webkit-scrollbar { display: none; }
-
-.nav-links a {
-  display: block;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: var(--muted);
-  border-radius: 6px;
-  white-space: nowrap;
-  transition: color 0.15s, background 0.15s;
-}
-
-.nav-links a:hover { color: var(--text); background: var(--surface2); }
-.nav-links a.money:hover { color: var(--money); }
-.nav-links a.home-cat:hover { color: var(--home); }
-.nav-links a.health:hover { color: var(--health); }
-.nav-links a.travel:hover { color: var(--travel); }
-.nav-links a.life:hover { color: var(--life); }
-
-/* ── CALCULATOR PAGE LAYOUT ── */
-.calc-page {
-  max-width: 620px;
-  margin: 0 auto;
-  padding: 2rem 1rem 5rem;
-}
-
-.calc-header {
-  margin-bottom: 2rem;
-}
-
-.breadcrumb {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--muted);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.breadcrumb a { color: var(--muted); text-decoration: none; }
-.breadcrumb a:hover { color: var(--text2); }
-
-.calc-title {
-  font-size: clamp(1.8rem, 5vw, 2.6rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
-  margin-bottom: 0.5rem;
-}
-
-.calc-desc {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text2);
-  line-height: 1.6;
-}
-
-/* ── SECTIONS ── */
-.section {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.4rem 1.5rem;
-  margin-bottom: 1rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.section-bar {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1.2rem;
-}
-
-.section-icon {
-  font-size: 1rem;
-  width: 30px; height: 30px;
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--surface2);
-}
-
-.section-title {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text2);
-}
-
-/* ── FIELDS ── */
-.field { margin-bottom: 1rem; }
-.field:last-child { margin-bottom: 0; }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-
-label {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--muted);
-  margin-bottom: 0.35rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.input-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.prefix, .suffix {
-  position: absolute;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: var(--muted);
-  pointer-events: none;
-}
-
-.prefix { left: 11px; }
-.suffix { right: 11px; }
-
-input[type="number"],
-input[type="text"],
-select {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  padding: 0.6rem 0.8rem;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  appearance: none;
-  -moz-appearance: textfield;
-}
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
-
-input.has-prefix { padding-left: 1.8rem; }
-input.has-suffix { padding-right: 2.2rem; }
-
-input:focus, select:focus {
-  border-color: var(--accent, var(--money));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--money)) 15%, transparent);
-}
-
-select {
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23606068' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  padding-right: 2rem;
-}
-
-/* Toggle buttons */
-.toggle-group {
-  display: flex;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 3px;
-  gap: 3px;
-}
-
-.toggle-btn {
-  flex: 1;
-  padding: 0.4rem 0.6rem;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  white-space: nowrap;
-}
-
-.toggle-btn.active {
-  background: var(--accent, var(--money));
-  color: #0a0a0b;
-  font-weight: 500;
-}
-
-/* ── RESULT CARD ── */
-.result-card {
-  border-radius: var(--radius);
-  padding: 1.6rem 1.5rem;
-  margin-top: 1.2rem;
-  position: relative;
-  overflow: hidden;
-  background: var(--accent, var(--money));
-  color: #0a0a0b;
-}
-
-.result-card::after {
-  content: '';
-  position: absolute;
-  right: -30px; bottom: -30px;
-  width: 140px; height: 140px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.08);
-}
-
-.result-label {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  opacity: 0.6;
-  margin-bottom: 0.3rem;
-}
-
-.result-value {
-  font-size: clamp(2rem, 8vw, 3rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  position: relative;
-  z-index: 1;
-}
-
-.result-sub {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  opacity: 0.55;
-  margin-top: 0.4rem;
-  position: relative;
-  z-index: 1;
-}
-
-.result-grid {
-  display: grid;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  position: relative;
-  z-index: 1;
-}
-
-.result-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-.result-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-.result-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-
-.result-item {
-  background: rgba(0,0,0,0.12);
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
-}
-
-.result-item .ri-label {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  opacity: 0.6;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.result-item .ri-value {
-  font-family: var(--font-mono);
-  font-size: 0.88rem;
-  font-weight: 500;
-  margin-top: 0.15rem;
-}
-
-/* ── INFO NOTE ── */
-.info-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.7rem;
-  margin-top: 1rem;
-  padding: 0.9rem 1rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-}
-
-.info-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--accent, var(--money));
-  margin-top: 5px;
-  flex-shrink: 0;
-}
-
-.info-note p {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text2);
-  line-height: 1.6;
-}
-
-.info-note strong { color: var(--text); font-weight: 500; }
-
-/* ── AD SLOTS ── */
-.ad-slot {
-  width: 100%;
-  background: var(--surface);
-  border: 1px dashed var(--border2);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--muted);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin: 1rem 0;
-}
-
-.ad-slot.leaderboard { height: 90px; }
-.ad-slot.rectangle { height: 250px; }
-
-/* ── FOOTER ── */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 2rem 1.5rem;
-  text-align: center;
-}
-
-.footer-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-footer p {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--muted);
-}
-
-footer a { color: var(--text2); text-decoration: none; }
-footer a:hover { color: var(--text); }
-
-/* ── ANIMATIONS ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.fade-up {
-  animation: fadeUp 0.4s ease both;
-}
-
-.fade-up-1 { animation-delay: 0.05s; }
-.fade-up-2 { animation-delay: 0.1s; }
-.fade-up-3 { animation-delay: 0.15s; }
-.fade-up-4 { animation-delay: 0.2s; }
-.fade-up-5 { animation-delay: 0.25s; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 600px) {
-  .field-row { grid-template-columns: 1fr; }
-  .result-grid.cols-3 { grid-template-columns: 1fr 1fr; }
-  .result-grid.cols-4 { grid-template-columns: 1fr 1fr; }
-  .nav-links { display: none; }
-}
-</style>
+<title>CalHive — Free Global Calculators</title>
+<meta name="description" content="23 free calculators for money, health, home, travel and life. Works globally.">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  /* Homepage specific */
-  .hero {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 5rem 1.5rem 3rem;
-    text-align: center;
-    position: relative;
-  }
-
-  .hero-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--money);
-    border: 1px solid color-mix(in srgb, var(--money) 30%, transparent);
-    padding: 0.3rem 0.8rem;
-    border-radius: 100px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    animation: fadeUp 0.5s ease both;
-  }
-
-  .hero-tag::before {
-    content: '';
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--money);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
-  }
-
-  h1 {
-    font-size: clamp(2.8rem, 8vw, 5rem);
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1.0;
-    margin-bottom: 1.2rem;
-    animation: fadeUp 0.5s 0.1s ease both;
-  }
-
-  h1 em {
-    font-style: normal;
-    position: relative;
-    display: inline-block;
-  }
-
-  h1 em::after {
-    content: '';
-    position: absolute;
-    bottom: 4px; left: 0; right: 0;
-    height: 4px;
-    background: var(--money);
-    border-radius: 2px;
-  }
-
-  .hero-sub {
-    font-family: var(--font-mono);
-    font-size: clamp(0.8rem, 2vw, 0.95rem);
-    color: var(--text2);
-    max-width: 520px;
-    margin: 0 auto 2.5rem;
-    line-height: 1.7;
-    animation: fadeUp 0.5s 0.15s ease both;
-  }
-
-  .hero-stats {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 4rem;
-    animation: fadeUp 0.5s 0.2s ease both;
-  }
-
-  .stat {
-    text-align: center;
-  }
-
-  .stat-num {
-    font-size: 1.8rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: var(--money);
-  }
-
-  .stat-label {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  /* Category sections */
-  .categories {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1.5rem 5rem;
-  }
-
-  .category-section {
-    margin-bottom: 3.5rem;
-  }
-
-  .category-header {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.8rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .category-icon {
-    font-size: 1.2rem;
-  }
-
-  .category-name {
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-
-  .category-count {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--muted);
-    margin-left: auto;
-  }
-
-  .calc-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 0.8rem;
-  }
-
-  .calc-card {
-    display: block;
-    text-decoration: none;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.2rem 1.3rem;
-    transition: border-color 0.15s, transform 0.15s, background 0.15s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .calc-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 3px; height: 100%;
-    background: var(--cat-color);
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-
-  .calc-card:hover {
-    border-color: var(--cat-color);
-    background: var(--surface2);
-    transform: translateY(-2px);
-  }
-
-  .calc-card:hover::before { opacity: 1; }
-
-  .card-name {
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin-bottom: 0.3rem;
-    color: var(--text);
-  }
-
-  .card-desc {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-
-  .card-arrow {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted);
-    font-size: 1rem;
-    transition: color 0.15s, transform 0.15s;
-  }
-
-  .calc-card:hover .card-arrow {
-    color: var(--cat-color);
-    transform: translateY(-50%) translateX(3px);
-  }
-
-  /* Background glow effects */
-  .glow-money { background: radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--money) 8%, transparent) 0%, transparent 60%); }
-  .glow-home { background: radial-gradient(ellipse at 70% 20%, color-mix(in srgb, var(--home) 8%, transparent) 0%, transparent 60%); }
-  .glow-health { background: radial-gradient(ellipse at 20% 60%, color-mix(in srgb, var(--health) 8%, transparent) 0%, transparent 60%); }
-  .glow-travel { background: radial-gradient(ellipse at 80% 60%, color-mix(in srgb, var(--travel) 8%, transparent) 0%, transparent 60%); }
-  .glow-life { background: radial-gradient(ellipse at 50% 80%, color-mix(in srgb, var(--life) 8%, transparent) 0%, transparent 60%); }
-
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at 20% 50%, color-mix(in srgb, var(--money) 10%, transparent) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 50%, color-mix(in srgb, var(--home) 6%, transparent) 0%, transparent 50%);
-    pointer-events: none;
-  }
-
-  @media (max-width: 600px) {
-    .hero { padding: 3rem 1rem 2rem; }
-    .hero-stats { gap: 1.2rem; }
-    .stat-num { font-size: 1.4rem; }
-    .categories { padding: 0 1rem 3rem; }
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0b;--sur:#141416;--sur2:#1c1c1f;--bor:#272729;--tx:#f0f0ec;--tx2:#a0a0a8;--mu:#606068;--mo:#c8f135;--ho:#5eb8ff;--he:#ff7f5e;--tr:#f1d435;--li:#b388ff;--r:12px;--rs:8px;--fd:'Syne',sans-serif;--fm:'DM Mono',monospace}
+body{background:var(--bg);color:var(--tx);font-family:var(--fd);min-height:100vh;-webkit-font-smoothing:antialiased}
+.pg{display:none}.pg.on{display:block}
+nav{position:sticky;top:0;z-index:100;background:rgba(10,10,11,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--bor);padding:0 1.5rem}
+.ni{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;gap:1rem}
+.logo{font-size:1.3rem;font-weight:800;letter-spacing:-0.03em;color:var(--tx);cursor:pointer}.logo b{color:var(--mo)}
+.nl{display:flex;align-items:center;gap:0.2rem;list-style:none;overflow-x:auto;scrollbar-width:none}
+.nl a{display:block;padding:0.4rem 0.75rem;font-size:0.78rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--mu);border-radius:6px;white-space:nowrap;cursor:pointer}
+.nl a:hover{color:var(--tx);background:var(--sur2)}
+select.cur{font-size:0.75rem;padding:0.35rem 1.8rem 0.35rem 0.6rem;border:1px solid var(--bor);border-radius:6px;background:var(--bg);color:var(--tx);font-family:var(--fm);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23606068' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
+.hero{max-width:1200px;margin:0 auto;padding:5rem 1.5rem 3rem;text-align:center;position:relative}
+.hbg{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,color-mix(in srgb,var(--mo) 10%,transparent),transparent 50%),radial-gradient(ellipse at 80% 50%,color-mix(in srgb,var(--ho) 6%,transparent),transparent 50%);pointer-events:none}
+.htag{display:inline-flex;align-items:center;gap:0.5rem;font-family:var(--fm);font-size:0.68rem;color:var(--mo);border:1px solid color-mix(in srgb,var(--mo) 30%,transparent);padding:0.3rem 0.8rem;border-radius:100px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1.5rem}
+.htag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--mo);animation:pu 2s infinite}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:0.4}}
+h1.ht{font-size:clamp(2.5rem,7vw,4.5rem);font-weight:800;letter-spacing:-0.04em;line-height:1;margin-bottom:1.2rem}
+h1.ht em{font-style:normal;position:relative}
+h1.ht em::after{content:'';position:absolute;bottom:2px;left:0;right:0;height:4px;background:var(--mo);border-radius:2px}
+.hsub{font-family:var(--fm);font-size:0.88rem;color:var(--tx2);max-width:500px;margin:0 auto 2.5rem;line-height:1.7}
+.hst{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap}
+.sn{font-size:1.8rem;font-weight:800;color:var(--mo)}.sl{font-family:var(--fm);font-size:0.65rem;color:var(--mu);text-transform:uppercase}
+.cats{max-width:1200px;margin:0 auto;padding:2rem 1.5rem 5rem}
+.cs{padding:1.5rem;border-radius:16px;margin-bottom:2rem}
+.ch{display:flex;align-items:center;gap:0.8rem;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid var(--bor)}
+.cn{font-size:1.1rem;font-weight:700}.cc{font-family:var(--fm);font-size:0.68rem;color:var(--mu);margin-left:auto}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.8rem}
+.card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:1.1rem 1.3rem;transition:border-color 0.15s,transform 0.15s;position:relative;overflow:hidden;cursor:pointer}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--ac);opacity:0;transition:opacity 0.15s}
+.card:hover{border-color:var(--ac);transform:translateY(-2px)}.card:hover::before{opacity:1}
+.kn{font-size:0.92rem;font-weight:700;margin-bottom:0.25rem}.kd{font-family:var(--fm);font-size:0.67rem;color:var(--mu);line-height:1.5}
+.kar{position:absolute;right:1rem;top:50%;transform:translateY(-50%);color:var(--mu)}
+.cp{max-width:620px;margin:0 auto;padding:2rem 1rem 5rem}
+.bc{font-family:var(--fm);font-size:0.68rem;color:var(--mu);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.8rem}
+.bc span{cursor:pointer}.bc span:hover{color:var(--tx2)}
+h2.ct{font-size:clamp(1.8rem,5vw,2.5rem);font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin-bottom:0.5rem}
+.cdesc{font-family:var(--fm);font-size:0.75rem;color:var(--tx2);line-height:1.6;margin-bottom:1.5rem}
+.sec{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:1.4rem 1.5rem;margin-bottom:1rem;position:relative;overflow:hidden}
+.sb{position:absolute;top:0;left:0;right:0;height:2px}
+.sh{display:flex;align-items:center;gap:0.6rem;margin-bottom:1.2rem}
+.si{font-size:1rem;width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;background:var(--sur2)}
+.st{font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--tx2)}
+.fi{margin-bottom:1rem}.fi:last-child{margin-bottom:0}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
+label{display:block;font-family:var(--fm);font-size:0.7rem;color:var(--mu);margin-bottom:0.35rem;letter-spacing:0.05em;text-transform:uppercase}
+.iw{position:relative;display:flex;align-items:center}
+.px,.sx{position:absolute;font-family:var(--fm);font-size:0.82rem;color:var(--mu);pointer-events:none}
+.px{left:11px}.sx{right:11px}
+input[type=number],input[type=text],.fi select{width:100%;background:var(--bg);border:1px solid var(--bor);border-radius:var(--rs);color:var(--tx);font-family:var(--fm);font-size:0.9rem;padding:0.6rem 0.8rem;outline:none;transition:border-color 0.15s;-moz-appearance:textfield;appearance:none}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+.hp{padding-left:1.8rem!important}.hs{padding-right:2.2rem!important}
+.fi select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23606068' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:2rem;cursor:pointer}
+input:focus,.fi select:focus{border-color:var(--ac,var(--mo))}
+.btn{width:100%;padding:0.8rem;border:none;border-radius:var(--rs);font-family:var(--fm);font-weight:700;font-size:0.9rem;cursor:pointer;margin-top:0.8rem;color:#0a0a0b}
+.rc{border-radius:var(--r);padding:1.6rem 1.5rem;margin-top:1.2rem;position:relative;overflow:hidden;color:#0a0a0b}
+.rc::after{content:'';position:absolute;right:-30px;bottom:-30px;width:140px;height:140px;border-radius:50%;background:rgba(0,0,0,0.08)}
+.rl{font-family:var(--fm);font-size:0.68rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;opacity:0.6;margin-bottom:0.3rem}
+.rv{font-size:clamp(1.8rem,7vw,2.8rem);font-weight:800;line-height:1;letter-spacing:-0.03em;position:relative;z-index:1}
+.rs{font-family:var(--fm);font-size:0.7rem;opacity:0.55;margin-top:0.4rem;position:relative;z-index:1}
+.rg{display:grid;gap:0.5rem;margin-top:1rem;position:relative;z-index:1}
+.rg2{grid-template-columns:1fr 1fr}.rg3{grid-template-columns:1fr 1fr 1fr}
+.ri{background:rgba(0,0,0,0.12);border-radius:8px;padding:0.6rem 0.8rem}
+.ril{font-family:var(--fm);font-size:0.6rem;opacity:0.6;text-transform:uppercase;letter-spacing:0.08em}
+.riv{font-family:var(--fm);font-size:0.88rem;font-weight:500;margin-top:0.15rem}
+.note{display:flex;align-items:flex-start;gap:0.7rem;margin-top:1rem;padding:0.9rem 1rem;background:var(--sur);border:1px solid var(--bor);border-radius:var(--rs)}
+.nd{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.note p{font-family:var(--fm);font-size:0.7rem;color:var(--tx2);line-height:1.6}
+.note strong{color:var(--tx);font-weight:500}
+.ad{width:100%;background:var(--sur);border:1px dashed var(--bor);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:0.65rem;color:var(--mu);letter-spacing:0.08em;text-transform:uppercase;margin:1rem 0}
+.adl{height:90px}.adr{height:250px}
+footer{border-top:1px solid var(--bor);padding:2rem 1.5rem;text-align:center}
+footer p{font-family:var(--fm);font-size:0.7rem;color:var(--mu)}
+footer span{cursor:pointer;color:var(--tx2)}
+@media(max-width:600px){.r2{grid-template-columns:1fr}.rg3{grid-template-columns:1fr 1fr}.nl{display:none}.hero{padding:3rem 1rem 2rem}.cats{padding:1rem 1rem 3rem}}
 </style>
 </head>
 <body>
+<nav><div class="ni">
+  <div class="logo" onclick="go()">Cal<b>Hive</b></div>
+  <ul class="nl">
+    <li><a style="color:var(--mo)" onclick="to('thp')">💰 Money</a></li>
+    <li><a style="color:var(--ho)" onclick="to('en')">🏠 Home</a></li>
+    <li><a style="color:var(--he)" onclick="to('bmi')">🏋️ Health</a></li>
+    <li><a style="color:var(--tr)" onclick="to('cpm')">🚗 Travel</a></li>
+    <li><a style="color:var(--li)" onclick="to('fr')">⏱️ Life & Work</a></li>
+  </ul>
+  <select class="cur" id="CS" onchange="setCur(this.value)">
+    <option value="GBP">£ GBP</option><option value="USD">$ USD</option><option value="EUR">€ EUR</option>
+    <option value="INR">₹ INR</option><option value="CAD">CA$ CAD</option><option value="AUD">A$ AUD</option>
+    <option value="NGN">₦ NGN</option><option value="JPY">¥ JPY</option><option value="BRL">R$ BRL</option><option value="ZAR">R ZAR</option>
+  </select>
+</div></nav>
 
-<nav>
-  <div class="nav-inner">
-    <a href="index.html" class="logo">Cal<span>Hive</span></a>
-    <ul class="nav-links">
-      <li><a href="money/take-home-pay.html" class="money">💰 Money</a></li>
-      <li><a href="home/energy-bill.html" class="home-cat">🏠 Home</a></li>
-      <li><a href="health/bmi.html" class="health">🏋️ Health</a></li>
-      <li><a href="travel/cost-per-mile.html" class="travel">🚗 Travel</a></li>
-      <li><a href="life-work/freelance-rate.html" class="life">⏱️ Life & Work</a></li>
-    </ul>
-    <div id="currency-selector"></div>
+<!-- HOME -->
+<div id="p-home" class="pg on">
+<div class="hero"><div class="hbg"></div>
+  <div class="htag">🌍 Works in every country · every currency</div>
+  <h1 class="ht">Calculate <em>anything</em><br>in your life</h1>
+  <p class="hsub">23 free, instant calculators for money, health, home, travel and work. No sign-up. Just answers.</p>
+  <div class="hst">
+    <div><div class="sn">23</div><div class="sl">Calculators</div></div>
+    <div><div class="sn">15+</div><div class="sl">Currencies</div></div>
+    <div><div class="sn">100%</div><div class="sl">Free</div></div>
+    <div><div class="sn">0</div><div class="sl">Sign-ups</div></div>
   </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-tag">🌍 Works in every country, every currency</div>
-  <h1>Calculate <em>anything</em><br>in your life</h1>
-  <p class="hero-sub">23 free, instant calculators for money, health, home, travel and work. No sign-up. No ads blocking your results. Just answers.</p>
-  <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-num">23</div>
-      <div class="stat-label">Calculators</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">15+</div>
-      <div class="stat-label">Currencies</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">100%</div>
-      <div class="stat-label">Free</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">0</div>
-      <div class="stat-label">Sign-ups</div>
+</div>
+<div class="cats">
+  <div class="cs" style="background:radial-gradient(ellipse at 30% 50%,color-mix(in srgb,var(--mo) 8%,transparent),transparent)">
+    <div class="ch"><span style="font-size:1.2rem">💰</span><span class="cn" style="color:var(--mo)">Money</span><span class="cc">6 calculators</span></div>
+    <div class="cg">
+      <div class="card" style="--ac:var(--mo)" onclick="to('thp')"><div class="kn">Take-Home Pay</div><div class="kd">Salary → after tax & deductions</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--mo)" onclick="to('mo')"><div class="kn">Mortgage Repayment</div><div class="kd">Loan, rate, term → monthly payment</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--mo)" onclick="to('sv')"><div class="kn">Savings Goal</div><div class="kd">Target amount → time to reach it</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--mo)" onclick="to('ci')"><div class="kn">Compound Interest</div><div class="kd">Lump sum + monthly → growth over years</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--mo)" onclick="to('ln')"><div class="kn">Loan Repayment</div><div class="kd">Amount, rate, term → monthly cost</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--mo)" onclick="to('rvb')"><div class="kn">Rent vs Buy</div><div class="kd">True cost comparison over time</div><span class="kar">→</span></div>
     </div>
   </div>
-</section>
-
-<!-- AD SLOT TOP -->
-<div style="max-width:1200px;margin:0 auto;padding:0 1.5rem;">
-  <div class="ad-slot leaderboard">[ Advertisement ]</div>
+  <div class="cs" style="background:radial-gradient(ellipse at 70% 50%,color-mix(in srgb,var(--ho) 8%,transparent),transparent)">
+    <div class="ch"><span style="font-size:1.2rem">🏠</span><span class="cn" style="color:var(--ho)">Home</span><span class="cc">4 calculators</span></div>
+    <div class="cg">
+      <div class="card" style="--ac:var(--ho)" onclick="to('en')"><div class="kn">Energy Bill</div><div class="kd">Appliances + usage → monthly cost</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--ho)" onclick="to('pt')"><div class="kn">Paint Coverage</div><div class="kd">Room dimensions → tins needed</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--ho)" onclick="to('mv')"><div class="kn">Moving Cost</div><div class="kd">Distance & volume → removal estimate</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--ho)" onclick="to('bs')"><div class="kn">Bills Splitter</div><div class="kd">Household costs → fair split per person</div><span class="kar">→</span></div>
+    </div>
+  </div>
+  <div class="cs" style="background:radial-gradient(ellipse at 30% 50%,color-mix(in srgb,var(--he) 8%,transparent),transparent)">
+    <div class="ch"><span style="font-size:1.2rem">🏋️</span><span class="cn" style="color:var(--he)">Health</span><span class="cc">7 calculators</span></div>
+    <div class="cg">
+      <div class="card" style="--ac:var(--he)" onclick="to('bmi')"><div class="kn">BMI & Healthy Weight</div><div class="kd">Height, weight → BMI + ideal range</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--he)" onclick="to('cal')"><div class="kn">Daily Calorie Target</div><div class="kd">Age, weight, activity → calories</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--he)" onclick="to('fc')"><div class="kn">Food Calorie Lookup</div><div class="kd">Search any food → calories per portion</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--he)" onclick="to('cd')"><div class="kn">Calorie Distribution</div><div class="kd">Your calories → meal-by-meal split</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--he)" onclick="to('mac')"><div class="kn">Macro Calculator</div><div class="kd">Calories + goal → protein, carbs, fat</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--he)" onclick="to('pr')"><div class="kn">Protein by Body Weight</div><div class="kd">Weight + activity → protein target</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--he)" onclick="to('wa')"><div class="kn">Water Intake</div><div class="kd">Weight + activity → daily water target</div><span class="kar">→</span></div>
+    </div>
+  </div>
+  <div class="cs" style="background:radial-gradient(ellipse at 70% 50%,color-mix(in srgb,var(--tr) 8%,transparent),transparent)">
+    <div class="ch"><span style="font-size:1.2rem">🚗</span><span class="cn" style="color:var(--tr)">Travel</span><span class="cc">3 calculators</span></div>
+    <div class="cg">
+      <div class="card" style="--ac:var(--tr)" onclick="to('cpm')"><div class="kn">Cost Per Mile / km</div><div class="kd">Full car running cost breakdown</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--tr)" onclick="to('rt')"><div class="kn">Road Trip Cost</div><div class="kd">Distance, MPG, fuel → trip total</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--tr)" onclick="to('tb')"><div class="kn">Trip Budget Planner</div><div class="kd">Days, style, destination → full budget</div><span class="kar">→</span></div>
+    </div>
+  </div>
+  <div class="cs" style="background:radial-gradient(ellipse at 50% 50%,color-mix(in srgb,var(--li) 8%,transparent),transparent)">
+    <div class="ch"><span style="font-size:1.2rem">⏱️</span><span class="cn" style="color:var(--li)">Life & Work</span><span class="cc">3 calculators</span></div>
+    <div class="cg">
+      <div class="card" style="--ac:var(--li)" onclick="to('fr')"><div class="kn">Freelance Rate</div><div class="kd">Income target → hourly rate to charge</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--li)" onclick="to('tw')"><div class="kn">True Hourly Wage</div><div class="kd">Salary + costs → what you actually earn</div><span class="kar">→</span></div>
+      <div class="card" style="--ac:var(--li)" onclick="to('pe')"><div class="kn">Pension Pot</div><div class="kd">Age, contributions → retirement pot</div><span class="kar">→</span></div>
+    </div>
+  </div>
+</div>
 </div>
 
-<!-- CALCULATORS -->
-<section class="categories">
+<!-- TAKE HOME PAY -->
+<div id="p-thp" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Take-Home Pay</div>
+<h2 class="ct">Take-Home <span style="color:var(--mo)">Pay</span></h2>
+<p class="cdesc">Estimate take-home pay after tax. Select your country for local rates.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--mo)"></div>
+<div class="sh"><div class="si">🌍</div><span class="st">Details</span></div>
+<div class="fi"><label>Country</label><select class="fi" id="t1"><option value="uk">🇬🇧 United Kingdom</option><option value="us">🇺🇸 United States</option><option value="ca">🇨🇦 Canada</option><option value="au">🇦🇺 Australia</option><option value="in">🇮🇳 India</option><option value="ng">🇳🇬 Nigeria</option><option value="xx">🌍 Other</option></select></div>
+<div class="fi"><label>Gross Annual Salary</label><div class="iw"><span class="px S">£</span><input type="number" id="t2" class="hp" placeholder="50000"></div></div>
+<div class="fi"><label>Pension %</label><div class="iw"><input type="number" id="t3" class="hs" placeholder="5"><span class="sx">%</span></div></div>
+<button class="btn" style="background:var(--mo)" onclick="cTHP()">Calculate →</button>
+</div>
+<div id="rTHP" class="rc" style="background:var(--mo);display:none">
+<div class="rl">Annual Take-Home</div><div class="rv" id="rTHP1">—</div><div class="rs" id="rTHP2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">Monthly</div><div class="riv" id="rTHP3">—</div></div>
+<div class="ri"><div class="ril">Weekly</div><div class="riv" id="rTHP4">—</div></div>
+<div class="ri"><div class="ril">Tax Paid</div><div class="riv" id="rTHP5">—</div></div>
+<div class="ri"><div class="ril">Effective Rate</div><div class="riv" id="rTHP6">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+<div class="note"><div class="nd" style="background:var(--mo)"></div><p>Results are <strong>estimates</strong>. Tax rules vary by personal circumstances.</p></div>
+</div></div>
 
-  <!-- MONEY -->
-  <div class="category-section glow-money" style="padding:1.5rem;border-radius:16px;margin-bottom:2.5rem;">
-    <div class="category-header">
-      <span class="category-icon">💰</span>
-      <span class="category-name" style="color:var(--money)">Money</span>
-      <span class="category-count">6 calculators</span>
-    </div>
-    <div class="calc-grid">
-      <a href="money/take-home-pay.html" class="calc-card" style="--cat-color:var(--money)">
-        <div class="card-name">Take-Home Pay</div>
-        <div class="card-desc">Salary → after tax & deductions</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="money/mortgage.html" class="calc-card" style="--cat-color:var(--money)">
-        <div class="card-name">Mortgage Repayment</div>
-        <div class="card-desc">Loan, rate, term → monthly payment</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="money/savings-goal.html" class="calc-card" style="--cat-color:var(--money)">
-        <div class="card-name">Savings Goal</div>
-        <div class="card-desc">Target amount → time to reach it</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="money/compound-interest.html" class="calc-card" style="--cat-color:var(--money)">
-        <div class="card-name">Compound Interest</div>
-        <div class="card-desc">Lump sum + monthly → growth over years</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="money/loan-repayment.html" class="calc-card" style="--cat-color:var(--money)">
-        <div class="card-name">Loan Repayment</div>
-        <div class="card-desc">Amount, rate, term → monthly cost</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="money/rent-vs-buy.html" class="calc-card" style="--cat-color:var(--money)">
-        <div class="card-name">Rent vs Buy</div>
-        <div class="card-desc">True cost comparison over time</div>
-        <span class="card-arrow">→</span>
-      </a>
-    </div>
-  </div>
+<!-- MORTGAGE -->
+<div id="p-mo" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Mortgage</div>
+<h2 class="ct">Mortgage <span style="color:var(--mo)">Repayment</span></h2>
+<p class="cdesc">Calculate your monthly mortgage payment and total interest.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--mo)"></div>
+<div class="sh"><div class="si">🏠</div><span class="st">Loan Details</span></div>
+<div class="fi"><label>Property Price</label><div class="iw"><span class="px S">£</span><input type="number" id="m1" class="hp" placeholder="300000"></div></div>
+<div class="r2">
+<div class="fi"><label>Deposit %</label><div class="iw"><input type="number" id="m2" class="hs" placeholder="10"><span class="sx">%</span></div></div>
+<div class="fi"><label>Interest Rate</label><div class="iw"><input type="number" id="m3" class="hs" placeholder="5.5" step="0.1"><span class="sx">%</span></div></div>
+</div>
+<div class="fi"><label>Term</label><div class="iw"><input type="number" id="m4" class="hs" placeholder="25"><span class="sx">years</span></div></div>
+<button class="btn" style="background:var(--mo)" onclick="cMO()">Calculate →</button>
+</div>
+<div id="rMO" class="rc" style="background:var(--mo);display:none">
+<div class="rl">Monthly Payment</div><div class="rv" id="rMO1">—</div><div class="rs" id="rMO2">—</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">Loan</div><div class="riv" id="rMO3">—</div></div>
+<div class="ri"><div class="ril">Total Repaid</div><div class="riv" id="rMO4">—</div></div>
+<div class="ri"><div class="ril">Interest</div><div class="riv" id="rMO5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
 
-  <!-- HOME -->
-  <div class="category-section glow-home" style="padding:1.5rem;border-radius:16px;margin-bottom:2.5rem;">
-    <div class="category-header">
-      <span class="category-icon">🏠</span>
-      <span class="category-name" style="color:var(--home)">Home</span>
-      <span class="category-count">4 calculators</span>
-    </div>
-    <div class="calc-grid">
-      <a href="home/energy-bill.html" class="calc-card" style="--cat-color:var(--home)">
-        <div class="card-name">Energy Bill</div>
-        <div class="card-desc">Appliances + usage → monthly cost</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="home/paint-coverage.html" class="calc-card" style="--cat-color:var(--home)">
-        <div class="card-name">Paint Coverage</div>
-        <div class="card-desc">Room dimensions → tins needed</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="home/moving-cost.html" class="calc-card" style="--cat-color:var(--home)">
-        <div class="card-name">Moving Cost</div>
-        <div class="card-desc">Distance & volume → removal estimate</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="home/bills-splitter.html" class="calc-card" style="--cat-color:var(--home)">
-        <div class="card-name">Bills Splitter</div>
-        <div class="card-desc">Household costs → fair split per person</div>
-        <span class="card-arrow">→</span>
-      </a>
-    </div>
-  </div>
+<!-- SAVINGS GOAL -->
+<div id="p-sv" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Savings Goal</div>
+<h2 class="ct">Savings <span style="color:var(--mo)">Goal</span></h2>
+<p class="cdesc">Find out how long it will take to reach your savings target.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--mo)"></div>
+<div class="sh"><div class="si">🎯</div><span class="st">Your Goal</span></div>
+<div class="fi"><label>Savings Target</label><div class="iw"><span class="px S">£</span><input type="number" id="sv1" class="hp" placeholder="10000"></div></div>
+<div class="fi"><label>Current Savings</label><div class="iw"><span class="px S">£</span><input type="number" id="sv2" class="hp" placeholder="0"></div></div>
+<div class="r2">
+<div class="fi"><label>Monthly Savings</label><div class="iw"><span class="px S">£</span><input type="number" id="sv3" class="hp" placeholder="500"></div></div>
+<div class="fi"><label>Interest Rate</label><div class="iw"><input type="number" id="sv4" class="hs" placeholder="4.5" step="0.1"><span class="sx">%</span></div></div>
+</div>
+<button class="btn" style="background:var(--mo)" onclick="cSV()">Calculate →</button>
+</div>
+<div id="rSV" class="rc" style="background:var(--mo);display:none">
+<div class="rl">Time to Goal</div><div class="rv" id="rSV1">—</div><div class="rs" id="rSV2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">Total Saved</div><div class="riv" id="rSV3">—</div></div>
+<div class="ri"><div class="ril">Interest Earned</div><div class="riv" id="rSV4">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
 
-  <!-- HEALTH -->
-  <div class="category-section glow-health" style="padding:1.5rem;border-radius:16px;margin-bottom:2.5rem;">
-    <div class="category-header">
-      <span class="category-icon">🏋️</span>
-      <span class="category-name" style="color:var(--health)">Health</span>
-      <span class="category-count">7 calculators</span>
-    </div>
-    <div class="calc-grid">
-      <a href="health/bmi.html" class="calc-card" style="--cat-color:var(--health)">
-        <div class="card-name">BMI & Healthy Weight</div>
-        <div class="card-desc">Height, weight → BMI + ideal range</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="health/calorie-target.html" class="calc-card" style="--cat-color:var(--health)">
-        <div class="card-name">Daily Calorie Target</div>
-        <div class="card-desc">Age, weight, activity, goal → calories</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="health/food-calories.html" class="calc-card" style="--cat-color:var(--health)">
-        <div class="card-name">Food Calorie Lookup</div>
-        <div class="card-desc">Search a food → calories per portion</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="health/calorie-distribution.html" class="calc-card" style="--cat-color:var(--health)">
-        <div class="card-name">Calorie Distribution</div>
-        <div class="card-desc">Your calories → meal-by-meal split</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="health/macro-calculator.html" class="calc-card" style="--cat-color:var(--health)">
-        <div class="card-name">Macro Calculator</div>
-        <div class="card-desc">Calories + goal → protein, carbs, fat</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="health/protein-calculator.html" class="calc-card" style="--cat-color:var(--health)">
-        <div class="card-name">Protein by Body Weight</div>
-        <div class="card-desc">Weight + activity → daily protein target</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="health/water-intake.html" class="calc-card" style="--cat-color:var(--health)">
-        <div class="card-name">Water Intake</div>
-        <div class="card-desc">Weight + activity → daily water target</div>
-        <span class="card-arrow">→</span>
-      </a>
-    </div>
-  </div>
+<!-- COMPOUND INTEREST -->
+<div id="p-ci" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Compound Interest</div>
+<h2 class="ct">Compound <span style="color:var(--mo)">Interest</span></h2>
+<p class="cdesc">Watch your money grow with the power of compound interest.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--mo)"></div>
+<div class="sh"><div class="si">📈</div><span class="st">Investment</span></div>
+<div class="fi"><label>Initial Amount</label><div class="iw"><span class="px S">£</span><input type="number" id="ci1" class="hp" placeholder="5000"></div></div>
+<div class="r2">
+<div class="fi"><label>Monthly Contribution</label><div class="iw"><span class="px S">£</span><input type="number" id="ci2" class="hp" placeholder="200"></div></div>
+<div class="fi"><label>Annual Return</label><div class="iw"><input type="number" id="ci3" class="hs" placeholder="7" step="0.5"><span class="sx">%</span></div></div>
+</div>
+<div class="fi"><label>Years</label><div class="iw"><input type="number" id="ci4" class="hs" placeholder="20"><span class="sx">yrs</span></div></div>
+<button class="btn" style="background:var(--mo)" onclick="cCI()">Calculate →</button>
+</div>
+<div id="rCI" class="rc" style="background:var(--mo);display:none">
+<div class="rl">Total Value</div><div class="rv" id="rCI1">—</div><div class="rs" id="rCI2">—</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">Invested</div><div class="riv" id="rCI3">—</div></div>
+<div class="ri"><div class="ril">Growth</div><div class="riv" id="rCI4">—</div></div>
+<div class="ri"><div class="ril">Return</div><div class="riv" id="rCI5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
 
-  <!-- TRAVEL -->
-  <div class="category-section glow-travel" style="padding:1.5rem;border-radius:16px;margin-bottom:2.5rem;">
-    <div class="category-header">
-      <span class="category-icon">🚗</span>
-      <span class="category-name" style="color:var(--travel)">Travel</span>
-      <span class="category-count">3 calculators</span>
-    </div>
-    <div class="calc-grid">
-      <a href="travel/cost-per-mile.html" class="calc-card" style="--cat-color:var(--travel)">
-        <div class="card-name">Cost Per Mile / km</div>
-        <div class="card-desc">Full car running cost breakdown</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="travel/road-trip.html" class="calc-card" style="--cat-color:var(--travel)">
-        <div class="card-name">Road Trip Cost</div>
-        <div class="card-desc">Distance, MPG, fuel price → trip total</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="travel/trip-budget.html" class="calc-card" style="--cat-color:var(--travel)">
-        <div class="card-name">Trip Budget Planner</div>
-        <div class="card-desc">Days, style, destination → full budget</div>
-        <span class="card-arrow">→</span>
-      </a>
-    </div>
-  </div>
+<!-- LOAN -->
+<div id="p-ln" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Loan Repayment</div>
+<h2 class="ct">Loan <span style="color:var(--mo)">Repayment</span></h2>
+<p class="cdesc">Calculate your monthly loan payment and total interest.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--mo)"></div>
+<div class="sh"><div class="si">💳</div><span class="st">Loan Details</span></div>
+<div class="fi"><label>Loan Amount</label><div class="iw"><span class="px S">£</span><input type="number" id="ln1" class="hp" placeholder="15000"></div></div>
+<div class="r2">
+<div class="fi"><label>Interest Rate</label><div class="iw"><input type="number" id="ln2" class="hs" placeholder="8.5" step="0.1"><span class="sx">%</span></div></div>
+<div class="fi"><label>Term (years)</label><div class="iw"><input type="number" id="ln3" class="hs" placeholder="5"><span class="sx">yrs</span></div></div>
+</div>
+<button class="btn" style="background:var(--mo)" onclick="cLN()">Calculate →</button>
+</div>
+<div id="rLN" class="rc" style="background:var(--mo);display:none">
+<div class="rl">Monthly Payment</div><div class="rv" id="rLN1">—</div><div class="rs" id="rLN2">—</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">Total Repaid</div><div class="riv" id="rLN3">—</div></div>
+<div class="ri"><div class="ril">Interest</div><div class="riv" id="rLN4">—</div></div>
+<div class="ri"><div class="ril">Cost %</div><div class="riv" id="rLN5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
 
-  <!-- LIFE & WORK -->
-  <div class="category-section glow-life" style="padding:1.5rem;border-radius:16px;">
-    <div class="category-header">
-      <span class="category-icon">⏱️</span>
-      <span class="category-name" style="color:var(--life)">Life & Work</span>
-      <span class="category-count">3 calculators</span>
-    </div>
-    <div class="calc-grid">
-      <a href="life-work/freelance-rate.html" class="calc-card" style="--cat-color:var(--life)">
-        <div class="card-name">Freelance Rate</div>
-        <div class="card-desc">Income target → hourly rate to charge</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="life-work/true-hourly-wage.html" class="calc-card" style="--cat-color:var(--life)">
-        <div class="card-name">True Hourly Wage</div>
-        <div class="card-desc">Salary + work costs → what you actually earn</div>
-        <span class="card-arrow">→</span>
-      </a>
-      <a href="life-work/pension-pot.html" class="calc-card" style="--cat-color:var(--life)">
-        <div class="card-name">Pension Pot</div>
-        <div class="card-desc">Age, contributions → projected retirement pot</div>
-        <span class="card-arrow">→</span>
-      </a>
-    </div>
-  </div>
+<!-- RENT VS BUY -->
+<div id="p-rvb" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Rent vs Buy</div>
+<h2 class="ct">Rent vs <span style="color:var(--mo)">Buy</span></h2>
+<p class="cdesc">Compare the true long-term cost of renting versus buying.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--mo)"></div>
+<div class="sh"><div class="si">🏠</div><span class="st">Details</span></div>
+<div class="fi"><label>Home Price</label><div class="iw"><span class="px S">£</span><input type="number" id="rvb1" class="hp" placeholder="350000"></div></div>
+<div class="r2">
+<div class="fi"><label>Deposit %</label><div class="iw"><input type="number" id="rvb2" class="hs" placeholder="10"><span class="sx">%</span></div></div>
+<div class="fi"><label>Mortgage Rate</label><div class="iw"><input type="number" id="rvb3" class="hs" placeholder="5.5" step="0.1"><span class="sx">%</span></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Monthly Rent</label><div class="iw"><span class="px S">£</span><input type="number" id="rvb4" class="hp" placeholder="1500"></div></div>
+<div class="fi"><label>Years to Compare</label><div class="iw"><input type="number" id="rvb5" class="hs" placeholder="10"><span class="sx">yrs</span></div></div>
+</div>
+<button class="btn" style="background:var(--mo)" onclick="cRVB()">Compare →</button>
+</div>
+<div id="rRVB" class="rc" style="background:var(--mo);display:none">
+<div class="rl">Verdict</div><div class="rv" id="rRVB1">—</div><div class="rs" id="rRVB2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">Cost of Buying</div><div class="riv" id="rRVB3">—</div></div>
+<div class="ri"><div class="ril">Cost of Renting</div><div class="riv" id="rRVB4">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
 
-  <!-- AD SLOT BOTTOM -->
-  <div class="ad-slot rectangle" style="margin-top:2rem;">[ Advertisement ]</div>
+<!-- ENERGY BILL -->
+<div id="p-en" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Energy Bill</div>
+<h2 class="ct">Energy <span style="color:var(--ho)">Bill</span></h2>
+<p class="cdesc">Estimate your monthly electricity bill based on your appliances.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--ho)"></div>
+<div class="sh"><div class="si">⚡</div><span class="st">Rate & Appliances</span></div>
+<div class="r2">
+<div class="fi"><label>Cost per kWh</label><div class="iw"><span class="px S">£</span><input type="number" id="en1" class="hp" placeholder="0.30" step="0.01"></div></div>
+<div class="fi"><label>Standing Charge/Day</label><div class="iw"><span class="px S">£</span><input type="number" id="en2" class="hp" placeholder="0.50" step="0.01"></div></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 70px 70px;gap:0.4rem;font-family:var(--fm);font-size:0.62rem;color:var(--mu);margin:0.8rem 0 0.4rem"><span>Appliance</span><span>Watts</span><span>Hrs/day</span></div>
+<div style="display:grid;grid-template-columns:1fr 70px 70px;gap:0.4rem;align-items:center;margin-bottom:0.4rem"><span style="font-family:var(--fm);font-size:0.75rem">Fridge</span><input type="number" id="ew0" value="150"><input type="number" id="eh0" value="24"></div>
+<div style="display:grid;grid-template-columns:1fr 70px 70px;gap:0.4rem;align-items:center;margin-bottom:0.4rem"><span style="font-family:var(--fm);font-size:0.75rem">Washing Machine</span><input type="number" id="ew1" value="2000"><input type="number" id="eh1" value="1"></div>
+<div style="display:grid;grid-template-columns:1fr 70px 70px;gap:0.4rem;align-items:center;margin-bottom:0.4rem"><span style="font-family:var(--fm);font-size:0.75rem">TV (50")</span><input type="number" id="ew2" value="100"><input type="number" id="eh2" value="4"></div>
+<div style="display:grid;grid-template-columns:1fr 70px 70px;gap:0.4rem;align-items:center;margin-bottom:0.4rem"><span style="font-family:var(--fm);font-size:0.75rem">Kettle</span><input type="number" id="ew3" value="2000"><input type="number" id="eh3" value="0.25"></div>
+<div style="display:grid;grid-template-columns:1fr 70px 70px;gap:0.4rem;align-items:center;margin-bottom:0.4rem"><span style="font-family:var(--fm);font-size:0.75rem">Laptop/PC</span><input type="number" id="ew4" value="60"><input type="number" id="eh4" value="8"></div>
+<div style="display:grid;grid-template-columns:1fr 70px 70px;gap:0.4rem;align-items:center;margin-bottom:0.4rem"><span style="font-family:var(--fm);font-size:0.75rem">All Lighting</span><input type="number" id="ew5" value="200"><input type="number" id="eh5" value="6"></div>
+<div style="display:grid;grid-template-columns:1fr 70px 70px;gap:0.4rem;align-items:center;margin-bottom:0.4rem"><span style="font-family:var(--fm);font-size:0.75rem">Electric Shower</span><input type="number" id="ew6" value="8500"><input type="number" id="eh6" value="0.25"></div>
+<button class="btn" style="background:var(--ho)" onclick="cEN()">Calculate →</button>
+</div>
+<div id="rEN" class="rc" style="background:var(--ho);display:none">
+<div class="rl">Monthly Bill</div><div class="rv" id="rEN1">—</div><div class="rs" id="rEN2">—</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">kWh/Month</div><div class="riv" id="rEN3">—</div></div>
+<div class="ri"><div class="ril">Annual</div><div class="riv" id="rEN4">—</div></div>
+<div class="ri"><div class="ril">Daily</div><div class="riv" id="rEN5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
 
-</section>
+<!-- PAINT -->
+<div id="p-pt" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Paint Coverage</div>
+<h2 class="ct">Paint <span style="color:var(--ho)">Coverage</span></h2>
+<p class="cdesc">Work out exactly how many tins of paint you need.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--ho)"></div>
+<div class="sh"><div class="si">📐</div><span class="st">Room Dimensions</span></div>
+<div class="r2">
+<div class="fi"><label>Length (m)</label><div class="iw"><input type="number" id="pt1" class="hs" placeholder="5" step="0.1"><span class="sx">m</span></div></div>
+<div class="fi"><label>Width (m)</label><div class="iw"><input type="number" id="pt2" class="hs" placeholder="4" step="0.1"><span class="sx">m</span></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Height (m)</label><div class="iw"><input type="number" id="pt3" class="hs" placeholder="2.4" step="0.1"><span class="sx">m</span></div></div>
+<div class="fi"><label>Coats</label><div class="iw"><input type="number" id="pt4" class="hs" placeholder="2"><span class="sx">coats</span></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Doors</label><input type="number" id="pt5" placeholder="1" min="0"></div>
+<div class="fi"><label>Windows</label><input type="number" id="pt6" placeholder="2" min="0"></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Coverage (m²/L)</label><input type="number" id="pt7" placeholder="12"></div>
+<div class="fi"><label>Tin Size (L)</label><input type="number" id="pt8" placeholder="2.5" step="0.5"></div>
+</div>
+<button class="btn" style="background:var(--ho)" onclick="cPT()">Calculate →</button>
+</div>
+<div id="rPT" class="rc" style="background:var(--ho);display:none">
+<div class="rl">Tins Needed</div><div class="rv" id="rPT1">—</div><div class="rs" id="rPT2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">Total Area</div><div class="riv" id="rPT3">—</div></div>
+<div class="ri"><div class="ril">Paint Needed</div><div class="riv" id="rPT4">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+<div class="note"><div class="nd" style="background:var(--ho)"></div><p>Includes <strong>10% wastage</strong>. Standard paint covers ~12m²/litre.</p></div>
+</div></div>
 
-<footer>
-  <div class="footer-inner">
-    <p>© 2026 <a href="index.html">CalHive.net</a> — Free calculators for everyone, everywhere.
-    <br>Results are estimates only. Always consult a professional for financial or medical decisions.</p>
-  </div>
-</footer>
+<!-- MOVING COST -->
+<div id="p-mv" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Moving Cost</div>
+<h2 class="ct">Moving <span style="color:var(--ho)">Cost</span></h2>
+<p class="cdesc">Estimate your home moving costs.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--ho)"></div>
+<div class="sh"><div class="si">🚚</div><span class="st">Your Move</span></div>
+<div class="r2">
+<div class="fi"><label>Home Size</label><select class="fi" id="mv1"><option value="4">Studio/1 Bed</option><option value="6" selected>2 Bed</option><option value="8">3 Bed</option><option value="12">4+ Bed</option></select></div>
+<div class="fi"><label>Distance</label><select class="fi" id="mv2"><option value="1">Local (&lt;30mi)</option><option value="1.5">Regional</option><option value="2.5">Long Distance</option><option value="5">International</option></select></div>
+</div>
+<div class="fi"><label>Hourly Removal Rate</label><div class="iw"><span class="px S">£</span><input type="number" id="mv3" class="hp" placeholder="60"></div></div>
+<div class="r2">
+<div class="fi"><label>Packing</label><select class="fi" id="mv4"><option value="0">None</option><option value="2">Partial</option><option value="4">Full</option></select></div>
+<div class="fi"><label>Storage (months)</label><input type="number" id="mv5" placeholder="0" min="0"></div>
+</div>
+<button class="btn" style="background:var(--ho)" onclick="cMV()">Calculate →</button>
+</div>
+<div id="rMV" class="rc" style="background:var(--ho);display:none">
+<div class="rl">Estimated Cost</div><div class="rv" id="rMV1">—</div><div class="rs" id="rMV2">—</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">Removal</div><div class="riv" id="rMV3">—</div></div>
+<div class="ri"><div class="ril">Packing</div><div class="riv" id="rMV4">—</div></div>
+<div class="ri"><div class="ril">Storage</div><div class="riv" id="rMV5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
 
-<script>/* ============================================
-   CALHIVE.NET — Shared JavaScript Utilities
-   ============================================ */
+<!-- BILLS SPLITTER -->
+<div id="p-bs" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Bills Splitter</div>
+<h2 class="ct">Bills <span style="color:var(--ho)">Splitter</span></h2>
+<p class="cdesc">Split household bills fairly between housemates.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--ho)"></div>
+<div class="sh"><div class="si">👥</div><span class="st">People & Bills</span></div>
+<div class="fi"><label>Number of People</label><input type="number" id="bs1" placeholder="2" min="1" max="10"></div>
+<div class="fi"><label>Rent</label><div class="iw"><span class="px S">£</span><input type="number" id="bs2" class="hp" placeholder="1200"></div></div>
+<div class="fi"><label>Electricity</label><div class="iw"><span class="px S">£</span><input type="number" id="bs3" class="hp" placeholder="80"></div></div>
+<div class="fi"><label>Gas</label><div class="iw"><span class="px S">£</span><input type="number" id="bs4" class="hp" placeholder="60"></div></div>
+<div class="fi"><label>Internet</label><div class="iw"><span class="px S">£</span><input type="number" id="bs5" class="hp" placeholder="40"></div></div>
+<div class="fi"><label>Other</label><div class="iw"><span class="px S">£</span><input type="number" id="bs6" class="hp" placeholder="0"></div></div>
+<button class="btn" style="background:var(--ho)" onclick="cBS()">Split →</button>
+</div>
+<div id="rBS" class="rc" style="background:var(--ho);display:none">
+<div class="rl">Each Person Pays</div><div class="rv" id="rBS1">—</div><div class="rs" id="rBS2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">Total Bills</div><div class="riv" id="rBS3">—</div></div>
+<div class="ri"><div class="ril">Per Person/Year</div><div class="riv" id="rBS4">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
 
-// ── CURRENCY CONFIG ──
-const CURRENCIES = {
-  USD: { symbol: '$', name: 'US Dollar', locale: 'en-US' },
-  GBP: { symbol: '£', name: 'British Pound', locale: 'en-GB' },
-  EUR: { symbol: '€', name: 'Euro', locale: 'de-DE' },
-  INR: { symbol: '₹', name: 'Indian Rupee', locale: 'en-IN' },
-  CAD: { symbol: 'CA$', name: 'Canadian Dollar', locale: 'en-CA' },
-  AUD: { symbol: 'A$', name: 'Australian Dollar', locale: 'en-AU' },
-  NGN: { symbol: '₦', name: 'Nigerian Naira', locale: 'en-NG' },
-  JPY: { symbol: '¥', name: 'Japanese Yen', locale: 'ja-JP' },
-  CNY: { symbol: '¥', name: 'Chinese Yuan', locale: 'zh-CN' },
-  BRL: { symbol: 'R$', name: 'Brazilian Real', locale: 'pt-BR' },
-  ZAR: { symbol: 'R', name: 'South African Rand', locale: 'en-ZA' },
-  MXN: { symbol: 'MX$', name: 'Mexican Peso', locale: 'es-MX' },
-  SGD: { symbol: 'S$', name: 'Singapore Dollar', locale: 'en-SG' },
-  AED: { symbol: 'AED', name: 'UAE Dirham', locale: 'ar-AE' },
-  KES: { symbol: 'KSh', name: 'Kenyan Shilling', locale: 'en-KE' },
-};
+<!-- BMI -->
+<div id="p-bmi" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › BMI</div>
+<h2 class="ct">BMI & Healthy <span style="color:var(--he)">Weight</span></h2>
+<p class="cdesc">Calculate your Body Mass Index and healthy weight range.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--he)"></div>
+<div class="sh"><div class="si">📏</div><span class="st">Measurements</span></div>
+<div class="r2">
+<div class="fi"><label>Height (cm)</label><div class="iw"><input type="number" id="bmi1" class="hs" placeholder="175"><span class="sx">cm</span></div></div>
+<div class="fi"><label>Weight (kg)</label><div class="iw"><input type="number" id="bmi2" class="hs" placeholder="70"><span class="sx">kg</span></div></div>
+</div>
+<button class="btn" style="background:var(--he)" onclick="cBMI()">Calculate →</button>
+</div>
+<div id="rBMI" class="rc" style="background:var(--he);display:none">
+<div class="rl">Your BMI</div><div class="rv" id="rBMI1">—</div><div class="rs" id="rBMI2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">Healthy Range</div><div class="riv" id="rBMI3">—</div></div>
+<div class="ri"><div class="ril">Status</div><div class="riv" id="rBMI4">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+<div class="note"><div class="nd" style="background:var(--he)"></div><p>BMI does not account for muscle mass. Consult a healthcare professional.</p></div>
+</div></div>
 
-// Detect user currency from browser locale
-function detectCurrency() {
-  const saved = localStorage.getItem('calhive_currency');
-  if (saved && CURRENCIES[saved]) return saved;
-  const locale = navigator.language || 'en-US';
-  const map = {
-    'en-GB': 'GBP', 'en-US': 'USD', 'en-IN': 'INR',
-    'en-CA': 'CAD', 'en-AU': 'AUD', 'en-NG': 'NGN',
-    'en-ZA': 'ZAR', 'en-KE': 'KES', 'en-SG': 'SGD',
-    'de': 'EUR', 'fr': 'EUR', 'es': 'EUR', 'it': 'EUR',
-    'pt-BR': 'BRL', 'ja': 'JPY', 'zh': 'CNY', 'ar-AE': 'AED',
-    'es-MX': 'MXN',
-  };
-  for (const [key, val] of Object.entries(map)) {
-    if (locale.startsWith(key)) return val;
-  }
-  return 'USD';
+<!-- CALORIE TARGET -->
+<div id="p-cal" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Calorie Target</div>
+<h2 class="ct">Daily Calorie <span style="color:var(--he)">Target</span></h2>
+<p class="cdesc">Find your daily calorie needs using the Mifflin-St Jeor equation.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--he)"></div>
+<div class="sh"><div class="si">👤</div><span class="st">Your Details</span></div>
+<div class="r2">
+<div class="fi"><label>Age</label><div class="iw"><input type="number" id="ca1" class="hs" placeholder="30"><span class="sx">yrs</span></div></div>
+<div class="fi"><label>Sex</label><select class="fi" id="ca2"><option value="m">Male</option><option value="f">Female</option></select></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Weight (kg)</label><div class="iw"><input type="number" id="ca3" class="hs" placeholder="70"><span class="sx">kg</span></div></div>
+<div class="fi"><label>Height (cm)</label><div class="iw"><input type="number" id="ca4" class="hs" placeholder="175"><span class="sx">cm</span></div></div>
+</div>
+<div class="fi"><label>Activity</label><select class="fi" id="ca5"><option value="1.2">Sedentary</option><option value="1.375">Lightly Active</option><option value="1.55" selected>Moderately Active</option><option value="1.725">Very Active</option><option value="1.9">Extra Active</option></select></div>
+<div class="fi"><label>Goal</label><select class="fi" id="ca6"><option value="-500">Lose weight (−500 kcal)</option><option value="-250">Lose slowly</option><option value="0" selected>Maintain</option><option value="250">Gain slowly</option><option value="500">Gain weight (+500 kcal)</option></select></div>
+<button class="btn" style="background:var(--he)" onclick="cCAL()">Calculate →</button>
+</div>
+<div id="rCAL" class="rc" style="background:var(--he);display:none">
+<div class="rl">Daily Calorie Target</div><div class="rv" id="rCAL1">—</div><div class="rs" id="rCAL2">—</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">BMR</div><div class="riv" id="rCAL3">—</div></div>
+<div class="ri"><div class="ril">Maintenance</div><div class="riv" id="rCAL4">—</div></div>
+<div class="ri"><div class="ril">Adjustment</div><div class="riv" id="rCAL5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
+
+<!-- FOOD CALORIES -->
+<div id="p-fc" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Food Calories</div>
+<h2 class="ct">Food Calorie <span style="color:var(--he)">Lookup</span></h2>
+<p class="cdesc">Search any food and see calories, protein, carbs and fat per portion.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--he)"></div>
+<div class="sh"><div class="si">🔍</div><span class="st">Search Food</span></div>
+<div class="fi" style="position:relative">
+<label>Food Name</label>
+<input type="text" id="fc1" placeholder="e.g. chicken, banana, rice..." oninput="fcSearch()" autocomplete="off">
+<div id="fcDrop" style="position:absolute;top:100%;left:0;right:0;background:var(--sur2);border:1px solid var(--bor);border-radius:var(--rs);z-index:50;max-height:220px;overflow-y:auto;display:none"></div>
+</div>
+<div class="fi"><label>Portion Size</label><div class="iw"><input type="number" id="fc2" class="hs" placeholder="100" oninput="fcUpdate()"><span class="sx">g</span></div></div>
+</div>
+<div id="rFC" class="rc" style="background:var(--he);display:none">
+<div class="rl" id="rFCn">Select a food</div><div class="rv" id="rFC1">—</div><div class="rs" id="rFC2">—</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">Protein</div><div class="riv" id="rFC3">—</div></div>
+<div class="ri"><div class="ril">Carbs</div><div class="riv" id="rFC4">—</div></div>
+<div class="ri"><div class="ril">Fat</div><div class="riv" id="rFC5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
+
+<!-- CALORIE DISTRIBUTION -->
+<div id="p-cd" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Calorie Distribution</div>
+<h2 class="ct">Calorie <span style="color:var(--he)">Distribution</span></h2>
+<p class="cdesc">Split your daily calories across meals throughout the day.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--he)"></div>
+<div class="sh"><div class="si">🍽️</div><span class="st">Your Plan</span></div>
+<div class="fi"><label>Daily Calories</label><div class="iw"><input type="number" id="cd1" class="hs" placeholder="2000"><span class="sx">kcal</span></div></div>
+<div class="fi"><label>Pattern</label><select class="fi" id="cd2"><option value="s">Standard (25/35/35/5)</option><option value="f">Front-loaded (35/30/25/10)</option><option value="b">Back-loaded (15/25/45/15)</option><option value="a">Athlete (20/30/30/20)</option><option value="i">Intermittent (0/40/45/15)</option></select></div>
+<button class="btn" style="background:var(--he)" onclick="cCD()">Calculate →</button>
+</div>
+<div id="rCD" class="rc" style="background:var(--he);display:none">
+<div class="rl">Your Daily Plan</div><div class="rv" id="rCD1">—</div><div class="rs">kcal split across your day</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">🌅 Breakfast</div><div class="riv" id="rCD2">—</div></div>
+<div class="ri"><div class="ril">☀️ Lunch</div><div class="riv" id="rCD3">—</div></div>
+<div class="ri"><div class="ril">🌙 Dinner</div><div class="riv" id="rCD4">—</div></div>
+<div class="ri"><div class="ril">🍎 Snacks</div><div class="riv" id="rCD5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
+
+<!-- MACRO -->
+<div id="p-mac" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Macro Calculator</div>
+<h2 class="ct">Macro <span style="color:var(--he)">Calculator</span></h2>
+<p class="cdesc">Break your daily calories into protein, carbs and fat.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--he)"></div>
+<div class="sh"><div class="si">⚖️</div><span class="st">Your Goal</span></div>
+<div class="fi"><label>Daily Calories</label><div class="iw"><input type="number" id="ma1" class="hs" placeholder="2000"><span class="sx">kcal</span></div></div>
+<div class="fi"><label>Goal</label><select class="fi" id="ma2"><option value="b">Balanced (30P/40C/30F)</option><option value="m">Muscle Building (35P/45C/20F)</option><option value="l">Fat Loss (40P/30C/30F)</option><option value="k">Keto (30P/5C/65F)</option><option value="lc">Low Carb (35P/20C/45F)</option><option value="hc">High Carb (25P/55C/20F)</option></select></div>
+<button class="btn" style="background:var(--he)" onclick="cMAC()">Calculate →</button>
+</div>
+<div id="rMAC" class="rc" style="background:var(--he);display:none">
+<div class="rl">Your Macros</div><div class="rv" id="rMAC1">—</div><div class="rs" id="rMAC2">—</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">🟠 Protein</div><div class="riv" id="rMAC3">—</div></div>
+<div class="ri"><div class="ril">🟡 Carbs</div><div class="riv" id="rMAC4">—</div></div>
+<div class="ri"><div class="ril">🔵 Fat</div><div class="riv" id="rMAC5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
+
+<!-- PROTEIN -->
+<div id="p-pr" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Protein Calculator</div>
+<h2 class="ct">Protein by Body <span style="color:var(--he)">Weight</span></h2>
+<p class="cdesc">Find out exactly how much protein you need daily.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--he)"></div>
+<div class="sh"><div class="si">💪</div><span class="st">Your Details</span></div>
+<div class="fi"><label>Body Weight (kg)</label><div class="iw"><input type="number" id="pr1" class="hs" placeholder="70"><span class="sx">kg</span></div></div>
+<div class="fi"><label>Goal</label><select class="fi" id="pr2"><option value="0.8">General Health (0.8g/kg)</option><option value="1.2">Lightly Active (1.2g/kg)</option><option value="1.6" selected>Active (1.6g/kg)</option><option value="1.9">Build Muscle (1.9g/kg)</option><option value="2.1">Fat Loss (2.1g/kg)</option><option value="2.4">Athlete (2.4g/kg)</option></select></div>
+<button class="btn" style="background:var(--he)" onclick="cPR()">Calculate →</button>
+</div>
+<div id="rPR" class="rc" style="background:var(--he);display:none">
+<div class="rl">Daily Protein</div><div class="rv" id="rPR1">—</div><div class="rs" id="rPR2">—</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">Per kg</div><div class="riv" id="rPR3">—</div></div>
+<div class="ri"><div class="ril">Calories</div><div class="riv" id="rPR4">—</div></div>
+<div class="ri"><div class="ril">Per Meal (3x)</div><div class="riv" id="rPR5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
+
+<!-- WATER -->
+<div id="p-wa" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Water Intake</div>
+<h2 class="ct">Daily Water <span style="color:var(--he)">Intake</span></h2>
+<p class="cdesc">How much water should you drink every day?</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--he)"></div>
+<div class="sh"><div class="si">💧</div><span class="st">Your Details</span></div>
+<div class="fi"><label>Body Weight (kg)</label><div class="iw"><input type="number" id="wa1" class="hs" placeholder="70"><span class="sx">kg</span></div></div>
+<div class="fi"><label>Activity</label><select class="fi" id="wa2"><option value="0">Sedentary</option><option value="0.35">Lightly Active</option><option value="0.7" selected>Moderately Active</option><option value="1.0">Very Active</option><option value="1.5">Athlete</option></select></div>
+<div class="fi"><label>Climate</label><select class="fi" id="wa3"><option value="0">Cool/Temperate</option><option value="0.3">Warm (20–30°C)</option><option value="0.6">Hot (30°C+)</option><option value="0.9">Very Hot/Humid</option></select></div>
+<button class="btn" style="background:var(--he)" onclick="cWA()">Calculate →</button>
+</div>
+<div id="rWA" class="rc" style="background:var(--he);display:none">
+<div class="rl">Daily Water</div><div class="rv" id="rWA1">—</div><div class="rs">litres per day</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">Glasses (250ml)</div><div class="riv" id="rWA2">—</div></div>
+<div class="ri"><div class="ril">Bottles (500ml)</div><div class="riv" id="rWA3">—</div></div>
+<div class="ri"><div class="ril">Per Hour</div><div class="riv" id="rWA4">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
+
+<!-- COST PER MILE -->
+<div id="p-cpm" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Cost Per Mile</div>
+<h2 class="ct">Cost Per <span style="color:var(--tr)">Mile</span></h2>
+<p class="cdesc">Calculate the true cost of running your car per mile.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--tr)"></div>
+<div class="sh"><div class="si">⛽</div><span class="st">Costs</span></div>
+<div class="r2">
+<div class="fi"><label>Monthly Fuel</label><div class="iw"><span class="px S">£</span><input type="number" id="cp1" class="hp" placeholder="120"></div></div>
+<div class="fi"><label>Miles/Month</label><div class="iw"><input type="number" id="cp2" class="hs" placeholder="1000"><span class="sx">mi</span></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Insurance (annual)</label><div class="iw"><span class="px S">£</span><input type="number" id="cp3" class="hp" placeholder="800"></div></div>
+<div class="fi"><label>Road Tax (annual)</label><div class="iw"><span class="px S">£</span><input type="number" id="cp4" class="hp" placeholder="180"></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>MOT + Service</label><div class="iw"><span class="px S">£</span><input type="number" id="cp5" class="hp" placeholder="300"></div></div>
+<div class="fi"><label>Finance/Depreciation</label><div class="iw"><span class="px S">£</span><input type="number" id="cp6" class="hp" placeholder="2400"></div></div>
+</div>
+<button class="btn" style="background:var(--tr)" onclick="cCPM()">Calculate →</button>
+</div>
+<div id="rCPM" class="rc" style="background:var(--tr);display:none">
+<div class="rl">Cost Per Mile</div><div class="rv" id="rCPM1">—</div><div class="rs" id="rCPM2">—</div>
+<div class="rg rg3" style="margin-top:1rem">
+<div class="ri"><div class="ril">Fuel</div><div class="riv" id="rCPM3">—</div></div>
+<div class="ri"><div class="ril">Fixed</div><div class="riv" id="rCPM4">—</div></div>
+<div class="ri"><div class="ril">Annual Total</div><div class="riv" id="rCPM5">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+<div class="note"><div class="nd" style="background:var(--tr)"></div><p>UK HMRC rate: <strong>45p/mile</strong> for first 10,000 miles/year.</p></div>
+</div></div>
+
+<!-- ROAD TRIP -->
+<div id="p-rt" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Road Trip</div>
+<h2 class="ct">Road Trip <span style="color:var(--tr)">Cost</span></h2>
+<p class="cdesc">Calculate the full cost of a road trip.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--tr)"></div>
+<div class="sh"><div class="si">🚗</div><span class="st">Trip Details</span></div>
+<div class="r2">
+<div class="fi"><label>Distance (miles)</label><div class="iw"><input type="number" id="rt1" class="hs" placeholder="500"><span class="sx">mi</span></div></div>
+<div class="fi"><label>Fuel Economy (MPG)</label><div class="iw"><input type="number" id="rt2" class="hs" placeholder="35"><span class="sx">mpg</span></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Fuel Price/Litre</label><div class="iw"><span class="px S">£</span><input type="number" id="rt3" class="hp" placeholder="1.60" step="0.01"></div></div>
+<div class="fi"><label>Duration</label><div class="iw"><input type="number" id="rt4" class="hs" placeholder="3"><span class="sx">days</span></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>People</label><div class="iw"><input type="number" id="rt5" class="hs" placeholder="2"><span class="sx">ppl</span></div></div>
+<div class="fi"><label>Accommodation/Night</label><div class="iw"><span class="px S">£</span><input type="number" id="rt6" class="hp" placeholder="80"></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Food/Person/Day</label><div class="iw"><span class="px S">£</span><input type="number" id="rt7" class="hp" placeholder="40"></div></div>
+<div class="fi"><label>Activities/Day</label><div class="iw"><span class="px S">£</span><input type="number" id="rt8" class="hp" placeholder="30"></div></div>
+</div>
+<button class="btn" style="background:var(--tr)" onclick="cRT()">Calculate →</button>
+</div>
+<div id="rRT" class="rc" style="background:var(--tr);display:none">
+<div class="rl">Total Trip Cost</div><div class="rv" id="rRT1">—</div><div class="rs" id="rRT2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">Fuel</div><div class="riv" id="rRT3">—</div></div>
+<div class="ri"><div class="ril">Accommodation</div><div class="riv" id="rRT4">—</div></div>
+<div class="ri"><div class="ril">Food</div><div class="riv" id="rRT5">—</div></div>
+<div class="ri"><div class="ril">Activities</div><div class="riv" id="rRT6">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
+
+<!-- TRIP BUDGET -->
+<div id="p-tb" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Trip Budget</div>
+<h2 class="ct">Trip Budget <span style="color:var(--tr)">Planner</span></h2>
+<p class="cdesc">Plan your full holiday budget.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--tr)"></div>
+<div class="sh"><div class="si">✈️</div><span class="st">Your Trip</span></div>
+<div class="r2">
+<div class="fi"><label>Duration</label><div class="iw"><input type="number" id="tb1" class="hs" placeholder="7"><span class="sx">days</span></div></div>
+<div class="fi"><label>People</label><div class="iw"><input type="number" id="tb2" class="hs" placeholder="2"><span class="sx">ppl</span></div></div>
+</div>
+<div class="fi"><label>Flights (total, all people)</label><div class="iw"><span class="px S">£</span><input type="number" id="tb3" class="hp" placeholder="600"></div></div>
+<div class="r2">
+<div class="fi"><label>Accommodation/Night</label><div class="iw"><span class="px S">£</span><input type="number" id="tb4" class="hp" placeholder="80"></div></div>
+<div class="fi"><label>Food/Person/Day</label><div class="iw"><span class="px S">£</span><input type="number" id="tb5" class="hp" placeholder="40"></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Activities/Day</label><div class="iw"><span class="px S">£</span><input type="number" id="tb6" class="hp" placeholder="25"></div></div>
+<div class="fi"><label>Shopping/Extras</label><div class="iw"><span class="px S">£</span><input type="number" id="tb7" class="hp" placeholder="100"></div></div>
+</div>
+<button class="btn" style="background:var(--tr)" onclick="cTB()">Calculate →</button>
+</div>
+<div id="rTB" class="rc" style="background:var(--tr);display:none">
+<div class="rl">Total Budget</div><div class="rv" id="rTB1">—</div><div class="rs" id="rTB2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">Per Person</div><div class="riv" id="rTB3">—</div></div>
+<div class="ri"><div class="ril">Per Day</div><div class="riv" id="rTB4">—</div></div>
+<div class="ri"><div class="ril">Flights</div><div class="riv" id="rTB5">—</div></div>
+<div class="ri"><div class="ril">Living Costs</div><div class="riv" id="rTB6">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
+
+<!-- FREELANCE -->
+<div id="p-fr" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Freelance Rate</div>
+<h2 class="ct">Freelance <span style="color:var(--li)">Rate</span></h2>
+<p class="cdesc">Calculate the minimum hourly rate you need to charge.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--li)"></div>
+<div class="sh"><div class="si">🎯</div><span class="st">Income Target</span></div>
+<div class="fi"><label>Target Annual Take-Home</label><div class="iw"><span class="px S">£</span><input type="number" id="fr1" class="hp" placeholder="60000"></div></div>
+<div class="r2">
+<div class="fi"><label>Tax Rate</label><div class="iw"><input type="number" id="fr2" class="hs" placeholder="25"><span class="sx">%</span></div></div>
+<div class="fi"><label>Annual Expenses</label><div class="iw"><span class="px S">£</span><input type="number" id="fr3" class="hp" placeholder="3000"></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Weeks/Year</label><div class="iw"><input type="number" id="fr4" class="hs" placeholder="46"><span class="sx">wks</span></div></div>
+<div class="fi"><label>Billable Hrs/Week</label><div class="iw"><input type="number" id="fr5" class="hs" placeholder="25"><span class="sx">hrs</span></div></div>
+</div>
+<button class="btn" style="background:var(--li)" onclick="cFR()">Calculate →</button>
+</div>
+<div id="rFR" class="rc" style="background:var(--li);display:none">
+<div class="rl">Minimum Hourly Rate</div><div class="rv" id="rFR1">—</div><div class="rs" id="rFR2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">Daily Rate (8hrs)</div><div class="riv" id="rFR3">—</div></div>
+<div class="ri"><div class="ril">Monthly Revenue</div><div class="riv" id="rFR4">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+<div class="note"><div class="nd" style="background:var(--li)"></div><p>This is your <strong>minimum</strong> — add 20–30% for the value you bring.</p></div>
+</div></div>
+
+<!-- TRUE WAGE -->
+<div id="p-tw" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › True Hourly Wage</div>
+<h2 class="ct">True Hourly <span style="color:var(--li)">Wage</span></h2>
+<p class="cdesc">What do you actually earn per hour after commuting and work costs?</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--li)"></div>
+<div class="sh"><div class="si">💼</div><span class="st">Your Job</span></div>
+<div class="fi"><label>Annual Take-Home Pay</label><div class="iw"><span class="px S">£</span><input type="number" id="tw1" class="hp" placeholder="35000"></div></div>
+<div class="r2">
+<div class="fi"><label>Contract Hrs/Week</label><div class="iw"><input type="number" id="tw2" class="hs" placeholder="37.5"><span class="sx">hrs</span></div></div>
+<div class="fi"><label>Actual Hrs/Week</label><div class="iw"><input type="number" id="tw3" class="hs" placeholder="45"><span class="sx">hrs</span></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Weeks/Year</label><div class="iw"><input type="number" id="tw4" class="hs" placeholder="47"><span class="sx">wks</span></div></div>
+<div class="fi"><label>Commute (each way)</label><div class="iw"><input type="number" id="tw5" class="hs" placeholder="45"><span class="sx">min</span></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Commuting Cost/Year</label><div class="iw"><span class="px S">£</span><input type="number" id="tw6" class="hp" placeholder="1200"></div></div>
+<div class="fi"><label>Other Work Costs</label><div class="iw"><span class="px S">£</span><input type="number" id="tw7" class="hp" placeholder="500"></div></div>
+</div>
+<button class="btn" style="background:var(--li)" onclick="cTW()">Calculate →</button>
+</div>
+<div id="rTW" class="rc" style="background:var(--li);display:none">
+<div class="rl">True Hourly Wage</div><div class="rv" id="rTW1">—</div><div class="rs" id="rTW2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">Stated Rate</div><div class="riv" id="rTW3">—</div></div>
+<div class="ri"><div class="ril">Hours Lost/Year</div><div class="riv" id="rTW4">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+</div></div>
+
+<!-- PENSION -->
+<div id="p-pe" class="pg"><div class="cp">
+<div class="bc"><span onclick="go()">CalHive</span> › Pension Pot</div>
+<h2 class="ct">Pension <span style="color:var(--li)">Pot</span></h2>
+<p class="cdesc">Project how much your pension will be worth at retirement.</p>
+<div class="ad adl">[ Advertisement ]</div>
+<div class="sec"><div class="sb" style="background:var(--li)"></div>
+<div class="sh"><div class="si">🧓</div><span class="st">Your Details</span></div>
+<div class="r2">
+<div class="fi"><label>Current Age</label><div class="iw"><input type="number" id="pe1" class="hs" placeholder="30"><span class="sx">yrs</span></div></div>
+<div class="fi"><label>Retirement Age</label><div class="iw"><input type="number" id="pe2" class="hs" placeholder="67"><span class="sx">yrs</span></div></div>
+</div>
+<div class="fi"><label>Current Pot Value</label><div class="iw"><span class="px S">£</span><input type="number" id="pe3" class="hp" placeholder="10000"></div></div>
+<div class="r2">
+<div class="fi"><label>Your Monthly Contribution</label><div class="iw"><span class="px S">£</span><input type="number" id="pe4" class="hp" placeholder="200"></div></div>
+<div class="fi"><label>Employer Contribution</label><div class="iw"><span class="px S">£</span><input type="number" id="pe5" class="hp" placeholder="100"></div></div>
+</div>
+<div class="r2">
+<div class="fi"><label>Annual Growth Rate</label><div class="iw"><input type="number" id="pe6" class="hs" placeholder="6" step="0.5"><span class="sx">%</span></div></div>
+<div class="fi"><label>Annual Inflation</label><div class="iw"><input type="number" id="pe7" class="hs" placeholder="2.5" step="0.5"><span class="sx">%</span></div></div>
+</div>
+<button class="btn" style="background:var(--li)" onclick="cPE()">Calculate →</button>
+</div>
+<div id="rPE" class="rc" style="background:var(--li);display:none">
+<div class="rl">Projected Pot</div><div class="rv" id="rPE1">—</div><div class="rs" id="rPE2">—</div>
+<div class="rg rg2" style="margin-top:1rem">
+<div class="ri"><div class="ril">In Today's Money</div><div class="riv" id="rPE3">—</div></div>
+<div class="ri"><div class="ril">Monthly Income Est.</div><div class="riv" id="rPE4">—</div></div>
+</div></div>
+<div class="ad adr">[ Advertisement ]</div>
+<div class="note"><div class="nd" style="background:var(--li)"></div><p>Projections only. <strong>Start early</strong> — compound growth is powerful. Speak to a regulated pension adviser.</p></div>
+</div></div>
+
+<footer><p>© 2026 <span onclick="go()">CalHive.net</span> — Free calculators for everyone, everywhere.<br>Results are estimates only. Always consult a professional for financial or medical decisions.</p></footer>
+
+<script>
+var SYM={GBP:'£',USD:'$',EUR:'€',INR:'₹',CAD:'CA$',AUD:'A$',NGN:'₦',JPY:'¥',BRL:'R$',ZAR:'R'};
+var CUR='GBP';
+function sy(){return SYM[CUR]||'$';}
+function fm(n,d){if(isNaN(n))return'—';d=d||0;var s=sy(),a=Math.abs(n);if(a>=1e6)return s+(n/1e6).toFixed(1)+'M';if(a>=1000)return s+n.toLocaleString(undefined,{maximumFractionDigits:d});return s+n.toFixed(d);}
+function gv(id){var e=document.getElementById(id);return e?parseFloat(e.value)||0:0;}
+function gs(id){var e=document.getElementById(id);return e?e.value:'';}
+function sh(id,v){var e=document.getElementById(id);if(e)e.style.display=v?'':'none';}
+function st(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+
+function setCur(c){CUR=c;document.querySelectorAll('.S').forEach(function(e){e.textContent=sy();});}
+
+function go(){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  document.getElementById('p-home').classList.add('on');
+  window.scrollTo(0,0);
 }
 
-let currentCurrency = detectCurrency();
-
-function getCurrencySymbol() { return CURRENCIES[currentCurrency]?.symbol || '$'; }
-
-function formatMoney(amount, decimals = 0) {
-  if (isNaN(amount) || amount === null) return '—';
-  const sym = getCurrencySymbol();
-  const abs = Math.abs(amount);
-  let formatted;
-  if (abs >= 1000000) formatted = (amount / 1000000).toFixed(1) + 'M';
-  else if (abs >= 1000) formatted = amount.toLocaleString(undefined, { maximumFractionDigits: decimals });
-  else formatted = amount.toFixed(decimals);
-  return sym + formatted;
+function to(n){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  var e=document.getElementById('p-'+n);
+  if(e){e.classList.add('on');window.scrollTo(0,0);}
+  else go();
 }
 
-function formatNumber(n, decimals = 1) {
-  if (isNaN(n)) return '—';
-  return n.toLocaleString(undefined, { maximumFractionDigits: decimals });
+// TAKE HOME PAY
+function cTHP(){
+  var gross=gv('t2'),country=gs('t1'),pen=gv('t3')/100;
+  if(!gross){alert('Please enter your salary');return;}
+  var pA=gross*pen,tax=0,ni=0;
+  var txb=gross-pA;
+  if(country==='uk'){
+    if(txb>12570){var t=txb-12570;tax=t<=37700?t*0.2:7540+(t-37700)*0.4;}
+    if(gross>12570){ni=(Math.min(gross,50270)-12570)*0.08+(gross>50270?(gross-50270)*0.02:0);}
+  }else if(country==='us'){
+    var td=Math.max(0,txb-14600),ut=0,up=0;
+    [[11600,.1],[47150,.12],[100525,.22],[191950,.24],[243725,.32],[609350,.35],[1e10,.37]].forEach(function(b){if(td>up){ut+=(Math.min(td,b[0])-up)*b[1];up=b[0];}});
+    tax=ut;ni=Math.min(gross,168600)*.062+gross*.0145;
+  }else if(country==='au'){
+    var at=0,ap=0;
+    [[18200,0],[45000,.16],[120000,.30],[180000,.37],[1e10,.45]].forEach(function(b){if(gross>ap){at+=(Math.min(gross,b[0])-ap)*b[1];ap=b[0];}});
+    tax=at;ni=gross>26000?gross*.02:0;
+  }else if(country==='in'){
+    var it=0,ip=0;
+    [[300000,0],[600000,.05],[900000,.1],[1200000,.15],[1500000,.2],[1e10,.3]].forEach(function(b){if(txb>ip){it+=(Math.min(txb,b[0])-ip)*b[1];ip=b[0];}});
+    tax=it*1.04;ni=Math.min(gross,180000)*.12;
+  }else{tax=txb>10000?(txb-10000)*.2:0;ni=gross*.08;}
+  var take=Math.max(0,gross-pA-tax-ni);
+  sh('rTHP',true);
+  st('rTHP1',fm(take));st('rTHP2','annual take-home');
+  st('rTHP3',fm(take/12));st('rTHP4',fm(take/52));
+  st('rTHP5',fm(tax+ni));st('rTHP6',((tax+ni)/gross*100).toFixed(1)+'%');
 }
 
-// ── CURRENCY SELECTOR BUILDER ──
-function buildCurrencySelector(containerId) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  let html = `<select id="currency-select" onchange="changeCurrency(this.value)" style="font-size:0.75rem;padding:0.4rem 1.8rem 0.4rem 0.6rem;">`;
-  for (const [code, info] of Object.entries(CURRENCIES)) {
-    html += `<option value="${code}" ${code === currentCurrency ? 'selected' : ''}>${info.symbol} ${code}</option>`;
-  }
-  html += '</select>';
-  el.innerHTML = html;
+// MORTGAGE
+function cMO(){
+  var price=gv('m1'),dep=gv('m2')/100,r=gv('m3')/100/12,n=gv('m4')*12;
+  if(!price||!n){alert('Please fill in all fields');return;}
+  var loan=price*(1-dep);
+  var mo=r===0?loan/n:loan*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+  var tot=mo*n,int=tot-loan;
+  sh('rMO',true);
+  st('rMO1',fm(mo,0));st('rMO2','per month over '+gv('m4')+' years');
+  st('rMO3',fm(loan,0));st('rMO4',fm(tot,0));st('rMO5',fm(int,0));
 }
 
-function changeCurrency(code) {
-  currentCurrency = code;
-  localStorage.setItem('calhive_currency', code);
-  if (typeof calculate === 'function') calculate();
-  // Update all prefix symbols on page
-  document.querySelectorAll('.currency-symbol').forEach(el => {
-    el.textContent = getCurrencySymbol();
-  });
+// SAVINGS GOAL
+function cSV(){
+  var target=gv('sv1'),cur=gv('sv2'),monthly=gv('sv3'),rate=gv('sv4')/100;
+  if(!target||!monthly){alert('Please enter target and monthly savings');return;}
+  var rem=target-cur;
+  if(rem<=0){sh('rSV',true);st('rSV1','Already there!');st('rSV2','Your savings meet your goal');return;}
+  var mr=rate/12,months=0,bal=cur;
+  while(bal<target&&months<1200){bal=bal*(1+mr)+monthly;months++;}
+  var yrs=Math.floor(months/12),mos=months%12;
+  var contrib=cur+monthly*months,int=bal-contrib;
+  sh('rSV',true);
+  st('rSV1',yrs>0?yrs+'y '+mos+'m':months+' months');
+  st('rSV2','to reach your goal of '+fm(target));
+  st('rSV3',fm(contrib,0));st('rSV4',fm(Math.max(0,int),0));
 }
 
-// ── UNIT SYSTEM ──
-let unitSystem = localStorage.getItem('calhive_units') || 'metric';
-
-function setUnit(system) {
-  unitSystem = system;
-  localStorage.setItem('calhive_units', system);
-  document.querySelectorAll('.toggle-btn[data-unit]').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.unit === system);
-  });
-  if (typeof onUnitChange === 'function') onUnitChange(system);
-  if (typeof calculate === 'function') calculate();
+// COMPOUND INTEREST
+function cCI(){
+  var p=gv('ci1'),m=gv('ci2'),r=gv('ci3')/100,y=gv('ci4');
+  if(!y){alert('Please enter years');return;}
+  var mr=r/12,n=y*12;
+  var ls=p*Math.pow(1+mr,n);
+  var contrib=m>0?m*(Math.pow(1+mr,n)-1)/mr:0;
+  var total=ls+contrib,invested=p+m*n,int=total-invested;
+  sh('rCI',true);
+  st('rCI1',fm(total,0));st('rCI2','after '+y+' years at '+gv('ci3')+'% return');
+  st('rCI3',fm(invested,0));st('rCI4',fm(int,0));st('rCI5',(int/Math.max(1,invested)*100).toFixed(0)+'%');
 }
 
-// ── HELPERS ──
-function v(id) {
-  const el = document.getElementById(id);
-  if (!el) return 0;
-  return parseFloat(el.value) || 0;
+// LOAN
+function cLN(){
+  var amt=gv('ln1'),r=gv('ln2')/100/12,n=gv('ln3')*12;
+  if(!amt||!n){alert('Please fill in all fields');return;}
+  var mo=r===0?amt/n:amt*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+  var tot=mo*n,int=tot-amt;
+  sh('rLN',true);
+  st('rLN1',fm(mo,0));st('rLN2','per month over '+gv('ln3')+' years');
+  st('rLN3',fm(tot,0));st('rLN4',fm(int,0));st('rLN5',(int/amt*100).toFixed(1)+'%');
 }
 
-function sv(id) {
-  const el = document.getElementById(id);
-  if (!el) return '';
-  return el.value || '';
+// RENT VS BUY
+function cRVB(){
+  var price=gv('rvb1'),dep=gv('rvb2')/100,mr=gv('rvb3')/100,rent=gv('rvb4'),period=gv('rvb5')||10;
+  if(!price||!rent){alert('Please fill in home price and rent');return;}
+  var loan=price*(1-dep),r=mr/12,n=25*12,pn=period*12;
+  var mo=r===0?loan/n:loan*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+  var totalMort=0,bal=loan;
+  for(var i=0;i<Math.min(pn,n);i++){var ip=bal*r;var pp=mo-ip;totalMort+=mo;bal=Math.max(0,bal-pp);}
+  var homeVal=price*Math.pow(1.03,period);
+  var buyNet=price*dep+price*0.03+totalMort+price*0.01*period-(homeVal-price);
+  var rentTot=rent*12*period*1.1;
+  var buyWins=buyNet<rentTot;
+  sh('rRVB',true);
+  st('rRVB1',buyWins?'Buying Wins':'Renting Wins');
+  st('rRVB2',(buyWins?'Buying':'Renting')+' saves ~'+fm(Math.abs(buyNet-rentTot),0)+' over '+period+' years');
+  st('rRVB3',fm(buyNet,0));st('rRVB4',fm(rentTot,0));
 }
 
-function setResult(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
+// ENERGY
+function cEN(){
+  var rate=gv('en1'),stand=gv('en2');
+  var kwh=0;
+  for(var i=0;i<7;i++) kwh+=gv('ew'+i)*gv('eh'+i)*30/1000;
+  var mo=kwh*rate+stand*30;
+  sh('rEN',true);
+  st('rEN1',rate>0?fm(mo,2):kwh.toFixed(0)+' kWh');
+  st('rEN2',rate>0?'per month electricity':'Add your rate above for cost');
+  st('rEN3',kwh.toFixed(0)+' kWh');
+  st('rEN4',rate>0?fm(mo*12,0):'—');
+  st('rEN5',rate>0?fm(mo/30,2):'—');
 }
 
-function showElement(id, show = true) {
-  const el = document.getElementById(id);
-  if (el) el.style.display = show ? '' : 'none';
+// PAINT
+function cPT(){
+  var L=gv('pt1'),W=gv('pt2'),H=gv('pt3');
+  if(!L||!W||!H){alert('Please enter room dimensions');return;}
+  var coats=gv('pt4')||2,cov=gv('pt7')||12,tin=gv('pt8')||2.5;
+  var doors=gv('pt5')||0,wins=gv('pt6')||0;
+  var walls=Math.max(0,(2*(L+W)*H)-(doors*1.9)-(wins*1.5));
+  var area=walls*coats*1.1;
+  var litres=area/cov,tins=Math.ceil(litres/tin);
+  sh('rPT',true);
+  st('rPT1',tins+' tins');st('rPT2',tins+' x '+tin+'L tins for '+coats+' coats');
+  st('rPT3',area.toFixed(1)+'m²');st('rPT4',litres.toFixed(1)+'L');
 }
 
-// ── NAV ACTIVE STATE ──
-document.addEventListener('DOMContentLoaded', () => {
-  const path = window.location.pathname;
-  document.querySelectorAll('.nav-links a').forEach(a => {
-    if (a.getAttribute('href') && path.includes(a.getAttribute('href').replace('../', '').replace('.html', ''))) {
-      a.style.color = 'var(--text)';
-    }
-  });
-
-  // Init currency selectors on page
-  buildCurrencySelector('currency-selector');
-
-  // Init unit toggles
-  document.querySelectorAll('.toggle-btn[data-unit]').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.unit === unitSystem);
-    btn.addEventListener('click', () => setUnit(btn.dataset.unit));
-  });
-});
-
-// ── SHARED NAV HTML ──
-function getNav(active = '') {
-  return `
-  <nav>
-    <div class="nav-inner">
-      <a href="../index.html" class="logo">Cal<span>Hive</span></a>
-      <ul class="nav-links">
-        <li><a href="../money/take-home-pay.html" class="money">💰 Money</a></li>
-        <li><a href="../home/energy-bill.html" class="home-cat">🏠 Home</a></li>
-        <li><a href="../health/bmi.html" class="health">🏋️ Health</a></li>
-        <li><a href="../travel/cost-per-mile.html" class="travel">🚗 Travel</a></li>
-        <li><a href="../life-work/freelance-rate.html" class="life">⏱️ Life & Work</a></li>
-      </ul>
-      <div id="currency-selector"></div>
-    </div>
-  </nav>`;
+// MOVING
+function cMV(){
+  var hrs=parseInt(gs('mv1'))||6,mult=parseFloat(gs('mv2'))||1,rate=gv('mv3')||60;
+  var packHrs=parseInt(gs('mv4'))||0,stor=gv('mv5')||0;
+  var van=hrs*mult*rate,packCost=packHrs*rate,storCost=stor*rate*8;
+  var total=van+packCost+storCost;
+  sh('rMV',true);
+  st('rMV1',fm(total,0));st('rMV2','estimate for removal');
+  st('rMV3',fm(van,0));st('rMV4',packCost>0?fm(packCost,0):'Self pack');st('rMV5',storCost>0?fm(storCost,0):'None');
 }
 
-function getFooter() {
-  return `
-  <footer>
-    <div class="footer-inner">
-      <p>© 2026 <a href="../index.html">CalHive.net</a> — Free calculators for everyone, everywhere.
-      <br>Results are estimates only. Always consult a professional for financial or medical decisions.</p>
-    </div>
-  </footer>`;
+// BILLS SPLITTER
+function cBS(){
+  var ppl=gv('bs1')||2;
+  var total=gv('bs2')+gv('bs3')+gv('bs4')+gv('bs5')+gv('bs6');
+  if(!total){alert('Please enter at least one bill');return;}
+  var each=total/ppl;
+  sh('rBS',true);
+  st('rBS1',fm(each,2));st('rBS2','per person per month — total '+fm(total,2));
+  st('rBS3',fm(total,2));st('rBS4',fm(each*12,0));
+}
+
+// BMI
+function cBMI(){
+  var hm=gv('bmi1')/100,wkg=gv('bmi2');
+  if(!hm||!wkg){alert('Please enter height and weight');return;}
+  var bmi=wkg/(hm*hm);
+  var cat=bmi<18.5?'Underweight':bmi<25?'Normal weight ✅':bmi<30?'Overweight':'Obese';
+  var minW=18.5*hm*hm,maxW=25*hm*hm;
+  sh('rBMI',true);
+  st('rBMI1',bmi.toFixed(1));st('rBMI2',cat);
+  st('rBMI3',minW.toFixed(1)+'–'+maxW.toFixed(1)+' kg');
+  var diff=wkg-maxW;
+  st('rBMI4',bmi>=18.5&&bmi<25?'In range ✓':bmi<18.5?Math.abs(wkg-minW).toFixed(1)+'kg under':diff.toFixed(1)+'kg over');
+}
+
+// CALORIES
+function cCAL(){
+  var age=gv('ca1'),sex=gs('ca2'),w=gv('ca3'),h=gv('ca4');
+  var act=parseFloat(gs('ca5'))||1.55,goal=parseFloat(gs('ca6'))||0;
+  if(!age||!w||!h){alert('Please fill in all fields');return;}
+  var bmr=10*w+6.25*h-5*age+(sex==='m'?5:-161);
+  var tdee=bmr*act,target=Math.max(1200,tdee+goal);
+  sh('rCAL',true);
+  st('rCAL1',Math.round(target)+' kcal');
+  st('rCAL2',goal===0?'to maintain weight':'to '+(goal<0?'lose':'gain')+' weight');
+  st('rCAL3',Math.round(bmr)+' kcal');st('rCAL4',Math.round(tdee)+' kcal');
+  st('rCAL5',(goal>0?'+':'')+goal+' kcal');
+}
+
+// FOOD CALORIES
+var FOODS=[
+  {n:'Chicken Breast (cooked)',c:165,p:31,ca:0,f:3.6},{n:'Chicken Thigh',c:209,p:26,ca:0,f:11},
+  {n:'Salmon (cooked)',c:206,p:20,ca:0,f:13},{n:'Tuna (canned)',c:116,p:26,ca:0,f:1},
+  {n:'Beef Mince (lean)',c:215,p:26,ca:0,f:12},{n:'Eggs (whole)',c:143,p:13,ca:1.1,f:9.5},
+  {n:'Egg White',c:52,p:11,ca:0.7,f:0.2},{n:'Prawns/Shrimp',c:99,p:18,ca:0.9,f:2.7},
+  {n:'Greek Yoghurt (0%)',c:59,p:10,ca:3.6,f:0.4},{n:'Cheddar Cheese',c:402,p:25,ca:1.3,f:33},
+  {n:'Milk (whole)',c:61,p:3.2,ca:4.8,f:3.3},{n:'White Rice (cooked)',c:130,p:2.7,ca:28,f:0.3},
+  {n:'Brown Rice (cooked)',c:112,p:2.3,ca:24,f:0.8},{n:'Pasta (cooked)',c:131,p:5,ca:25,f:1.1},
+  {n:'Bread (white)',c:265,p:9,ca:49,f:3.2},{n:'Bread (wholemeal)',c:247,p:10,ca:42,f:3.4},
+  {n:'Oats (dry)',c:389,p:17,ca:66,f:7},{n:'Sweet Potato',c:90,p:2,ca:21,f:0.1},
+  {n:'Potato (baked)',c:93,p:2.5,ca:21,f:0.1},{n:'Banana',c:89,p:1.1,ca:23,f:0.3},
+  {n:'Apple',c:52,p:0.3,ca:14,f:0.2},{n:'Orange',c:47,p:0.9,ca:12,f:0.1},
+  {n:'Avocado',c:160,p:2,ca:9,f:15},{n:'Strawberries',c:32,p:0.7,ca:7.7,f:0.3},
+  {n:'Blueberries',c:57,p:0.7,ca:14,f:0.3},{n:'Mango',c:60,p:0.8,ca:15,f:0.4},
+  {n:'Broccoli',c:34,p:2.8,ca:7,f:0.4},{n:'Spinach',c:23,p:2.9,ca:3.6,f:0.4},
+  {n:'Carrot',c:41,p:0.9,ca:10,f:0.2},{n:'Tomato',c:18,p:0.9,ca:3.9,f:0.2},
+  {n:'Almonds',c:579,p:21,ca:22,f:50},{n:'Peanut Butter',c:588,p:25,ca:20,f:50},
+  {n:'Olive Oil',c:884,p:0,ca:0,f:100},{n:'Butter',c:717,p:0.9,ca:0.1,f:81},
+  {n:'Chocolate (milk)',c:535,p:7.6,ca:59,f:30},{n:'Chocolate (dark 70%)',c:598,p:7.8,ca:46,f:43},
+  {n:'Pizza (cheese)',c:266,p:11,ca:33,f:10},{n:'French Fries',c:312,p:3.4,ca:41,f:15},
+  {n:'Lentils (cooked)',c:116,p:9,ca:20,f:0.4},{n:'Chickpeas (cooked)',c:164,p:8.9,ca:27,f:2.6},
+  {n:'Tofu (firm)',c:76,p:8,ca:1.9,f:4.8},{n:'Orange Juice',c:45,p:0.7,ca:10,f:0.2},
+  {n:'Cola/Soda',c:41,p:0,ca:11,f:0},{n:'Coffee (black)',c:2,p:0.3,ca:0,f:0}
+];
+var fcFood=null;
+function fcSearch(){
+  var q=document.getElementById('fc1').value.toLowerCase().trim();
+  var drop=document.getElementById('fcDrop');
+  if(q.length<2){drop.style.display='none';return;}
+  var matches=FOODS.filter(function(f){return f.n.toLowerCase().indexOf(q)>=0;}).slice(0,8);
+  if(!matches.length){drop.style.display='none';return;}
+  drop.innerHTML=matches.map(function(f){
+    var idx=FOODS.indexOf(f);
+    return '<div onclick="fcSel('+idx+')" style="padding:0.6rem 0.9rem;cursor:pointer;border-bottom:1px solid var(--bor);font-size:0.82rem;font-family:var(--fm)" onmouseover="this.style.background=\'var(--sur)\'" onmouseout="this.style.background=\'\'">'+f.n+'<span style="font-size:0.65rem;color:var(--mu);margin-left:0.5rem">'+f.c+' kcal/100g</span></div>';
+  }).join('');
+  drop.style.display='block';
+}
+function fcSel(i){
+  fcFood=FOODS[i];
+  document.getElementById('fc1').value=fcFood.n;
+  document.getElementById('fcDrop').style.display='none';
+  if(!document.getElementById('fc2').value) document.getElementById('fc2').value=100;
+  fcUpdate();
+}
+function fcUpdate(){
+  if(!fcFood)return;
+  var g=parseFloat(document.getElementById('fc2').value)||100;
+  var f=g/100;
+  sh('rFC',true);
+  st('rFCn',fcFood.n);
+  st('rFC1',Math.round(fcFood.c*f)+' kcal');
+  st('rFC2','per '+g+'g serving');
+  st('rFC3',(fcFood.p*f).toFixed(1)+'g');
+  st('rFC4',(fcFood.ca*f).toFixed(1)+'g');
+  st('rFC5',(fcFood.f*f).toFixed(1)+'g');
+}
+document.addEventListener('click',function(e){if(!e.target.closest('#p-fc .fi'))document.getElementById('fcDrop').style.display='none';});
+
+// CALORIE DISTRIBUTION
+function cCD(){
+  var cal=gv('cd1');
+  if(!cal){alert('Please enter your daily calories');return;}
+  var pats={s:[25,35,35,5],f:[35,30,25,10],b:[15,25,45,15],a:[20,30,30,20],i:[0,40,45,15]};
+  var p=pats[gs('cd2')]||pats.s;
+  sh('rCD',true);
+  st('rCD1',Math.round(cal)+' kcal');
+  st('rCD2',Math.round(cal*p[0]/100)+' kcal');
+  st('rCD3',Math.round(cal*p[1]/100)+' kcal');
+  st('rCD4',Math.round(cal*p[2]/100)+' kcal');
+  st('rCD5',Math.round(cal*p[3]/100)+' kcal');
+}
+
+// MACRO
+function cMAC(){
+  var cal=gv('ma1');
+  if(!cal){alert('Please enter your daily calories');return;}
+  var splits={b:[30,40,30],m:[35,45,20],l:[40,30,30],k:[30,5,65],lc:[35,20,45],hc:[25,55,20]};
+  var s=splits[gs('ma2')]||splits.b;
+  sh('rMAC',true);
+  st('rMAC1',Math.round(cal)+' kcal');
+  st('rMAC2',s[0]+'% protein / '+s[1]+'% carbs / '+s[2]+'% fat');
+  st('rMAC3',Math.round(cal*s[0]/100/4)+'g');
+  st('rMAC4',Math.round(cal*s[1]/100/4)+'g');
+  st('rMAC5',Math.round(cal*s[2]/100/9)+'g');
+}
+
+// PROTEIN
+function cPR(){
+  var w=gv('pr1'),ratio=parseFloat(gs('pr2'))||1.6;
+  if(!w){alert('Please enter your body weight');return;}
+  var protein=Math.round(w*ratio);
+  sh('rPR',true);
+  st('rPR1',protein+'g');st('rPR2',ratio+'g per kg bodyweight');
+  st('rPR3',ratio+'g/kg');st('rPR4',Math.round(protein*4)+' kcal');st('rPR5',Math.round(protein/3)+'g');
+}
+
+// WATER
+function cWA(){
+  var w=gv('wa1'),act=parseFloat(gs('wa2'))||0,clim=parseFloat(gs('wa3'))||0;
+  if(!w){alert('Please enter your body weight');return;}
+  var L=Math.max(1.5,Math.min(6,w*35/1000+act*0.5+clim*0.3));
+  sh('rWA',true);
+  st('rWA1',L.toFixed(1)+'L');
+  st('rWA2',Math.round(L*4)+' glasses');
+  st('rWA3',Math.ceil(L*2)+' bottles');
+  st('rWA4',Math.round(L/16*1000)+'ml');
+}
+
+// COST PER MILE
+function cCPM(){
+  var mi=gv('cp2'),fuel=gv('cp1'),annMi=mi*12;
+  if(!mi){alert('Please enter miles per month');return;}
+  var fuelCpm=mi>0?fuel/mi:0;
+  var fixed=gv('cp3')+gv('cp4')+gv('cp5')+gv('cp6');
+  var fixCpm=annMi>0?fixed/annMi:0;
+  var total=fuelCpm+fixCpm;
+  function fmtCpm(n){return n===0?'—':n<1?(n*100).toFixed(1)+'p':sy()+n.toFixed(2);}
+  sh('rCPM',true);
+  st('rCPM1',total>0?fmtCpm(total):'Add costs above');
+  st('rCPM2',sy()+(total*annMi).toFixed(0)+'/year at '+annMi.toLocaleString()+' miles');
+  st('rCPM3',fmtCpm(fuelCpm));st('rCPM4',fmtCpm(fixCpm));st('rCPM5',fm(total*annMi,0));
+}
+
+// ROAD TRIP
+function cRT(){
+  var dist=gv('rt1'),mpg=gv('rt2'),fp=gv('rt3');
+  var days=gv('rt4')||1,ppl=gv('rt5')||1;
+  var fuelCost=dist&&mpg&&fp?dist/mpg*fp*3.785:0;
+  var accom=gv('rt6')*days,food=gv('rt7')*ppl*days,act=gv('rt8')*days;
+  var total=fuelCost+accom+food+act;
+  if(!total){alert('Please fill in some details');return;}
+  sh('rRT',true);
+  st('rRT1',fm(total,0));
+  st('rRT2',fm(total/ppl,0)+' per person over '+days+' day'+(days>1?'s':''));
+  st('rRT3',fm(fuelCost,0));st('rRT4',fm(accom,0));st('rRT5',fm(food,0));st('rRT6',fm(act,0));
+}
+
+// TRIP BUDGET
+function cTB(){
+  var days=gv('tb1')||7,ppl=gv('tb2')||1;
+  var acc=gv('tb4'),food=gv('tb5'),act=gv('tb6'),shop=gv('tb7'),flights=gv('tb3');
+  var daily=(acc+food*ppl+act)*days;
+  var living=daily+shop*ppl,total=living+flights;
+  sh('rTB',true);
+  st('rTB1',fm(total,0));st('rTB2',days+' days for '+ppl+' person'+(ppl>1?'s':''));
+  st('rTB3',fm(total/ppl,0));st('rTB4',fm((daily+shop*ppl)/days,0));
+  st('rTB5',fm(flights,0));st('rTB6',fm(living,0));
+}
+
+// FREELANCE
+function cFR(){
+  var target=gv('fr1'),tax=gv('fr2')/100,exp=gv('fr3');
+  var wks=gv('fr4')||46,hrs=gv('fr5')||25;
+  if(!target){alert('Please enter your income target');return;}
+  var gross=(target/(1-tax))+exp,billHrs=wks*hrs*0.8,rate=gross/billHrs;
+  sh('rFR',true);
+  st('rFR1',fm(rate,2)+'/hr');
+  st('rFR2','minimum to take home '+fm(target,0)+'/year');
+  st('rFR3',fm(rate*8,0));st('rFR4',fm(gross/12,0));
+}
+
+// TRUE WAGE
+function cTW(){
+  var pay=gv('tw1'),ch=gv('tw2')||37.5,ah=gv('tw3')||ch;
+  var wks=gv('tw4')||47,com=gv('tw5'),cc=gv('tw6'),oc=gv('tw7');
+  if(!pay){alert('Please enter your take-home pay');return;}
+  var expenses=cc+oc,net=pay-expenses;
+  var comHrs=com*2/60,totalHrs=(ah+comHrs)*wks;
+  var stated=pay/(ch*wks),trueRate=net/totalHrs;
+  sh('rTW',true);
+  st('rTW1',fm(trueRate,2)+'/hr');
+  st('rTW2','vs your stated rate of '+fm(stated,2)+'/hr');
+  st('rTW3',fm(stated,2)+'/hr');st('rTW4',Math.round(totalHrs)+' hrs/yr');
+}
+
+// PENSION
+function cPE(){
+  var age=gv('pe1'),ret=gv('pe2')||67,cur=gv('pe3');
+  var you=gv('pe4'),emp=gv('pe5'),gr=gv('pe6')/100||0.06,inf=gv('pe7')/100||0.025;
+  if(!age||age>=ret){alert('Please enter your current age');return;}
+  var yrs=ret-age,months=yrs*12,mr=gr/12,total=you+emp;
+  var fvCur=cur*Math.pow(1+gr,yrs);
+  var fvCon=mr>0?total*(Math.pow(1+mr,months)-1)/mr:total*months;
+  var nominal=fvCur+fvCon,real=nominal/Math.pow(1+inf,yrs);
+  var moIncome=nominal*0.04/12;
+  sh('rPE',true);
+  st('rPE1',fm(nominal,0));st('rPE2','projected at age '+ret+' ('+yrs+' years away)');
+  st('rPE3',fm(real,0));st('rPE4',fm(moIncome,0)+'/mo');
 }
 </script>
 </body>
