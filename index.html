@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CalHive — Free Global Calculators</title>
 <meta name="description" content="23 free calculators for money, health, home, travel and life. Works globally.">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4655638722281705" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -87,11 +88,11 @@ footer span{cursor:pointer;color:var(--tx2)}
 <nav><div class="ni">
   <div class="logo" onclick="go()">Cal<b>Hive</b></div>
   <ul class="nl">
-    <li><a style="color:var(--mo)" onclick="to('thp')">💰 Money</a></li>
-    <li><a style="color:var(--ho)" onclick="to('en')">🏠 Home</a></li>
-    <li><a style="color:var(--he)" onclick="to('bmi')">🏋️ Health</a></li>
-    <li><a style="color:var(--tr)" onclick="to('cpm')">🚗 Travel</a></li>
-    <li><a style="color:var(--li)" onclick="to('fr')">⏱️ Life & Work</a></li>
+    <li><a style="color:var(--mo)" onclick="cat('money')">💰 Money</a></li>
+    <li><a style="color:var(--ho)" onclick="cat('home')">🏠 Home</a></li>
+    <li><a style="color:var(--he)" onclick="cat('health')">🏋️ Health</a></li>
+    <li><a style="color:var(--tr)" onclick="cat('travel')">🚗 Travel</a></li>
+    <li><a style="color:var(--li)" onclick="cat('life')">⏱️ Life & Work</a></li>
   </ul>
   <select class="cur" id="CS" onchange="setCur(this.value)">
     <option value="GBP">£ GBP</option><option value="USD">$ USD</option><option value="EUR">€ EUR</option>
@@ -167,7 +168,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- TAKE HOME PAY -->
 <div id="p-thp" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Take-Home Pay</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Take-Home Pay</div>
 <h2 class="ct">Take-Home <span style="color:var(--mo)">Pay</span></h2>
 <p class="cdesc">Estimate take-home pay after tax. Select your country for local rates.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -192,7 +193,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- MORTGAGE -->
 <div id="p-mo" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Mortgage</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Mortgage</div>
 <h2 class="ct">Mortgage <span style="color:var(--mo)">Repayment</span></h2>
 <p class="cdesc">Calculate your monthly mortgage payment and total interest.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -218,7 +219,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- SAVINGS GOAL -->
 <div id="p-sv" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Savings Goal</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Savings Goal</div>
 <h2 class="ct">Savings <span style="color:var(--mo)">Goal</span></h2>
 <p class="cdesc">Find out how long it will take to reach your savings target.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -243,7 +244,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- COMPOUND INTEREST -->
 <div id="p-ci" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Compound Interest</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Compound Interest</div>
 <h2 class="ct">Compound <span style="color:var(--mo)">Interest</span></h2>
 <p class="cdesc">Watch your money grow with the power of compound interest.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -269,7 +270,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- LOAN -->
 <div id="p-ln" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Loan Repayment</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Loan Repayment</div>
 <h2 class="ct">Loan <span style="color:var(--mo)">Repayment</span></h2>
 <p class="cdesc">Calculate your monthly loan payment and total interest.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -294,7 +295,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- RENT VS BUY -->
 <div id="p-rvb" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Rent vs Buy</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Rent vs Buy</div>
 <h2 class="ct">Rent vs <span style="color:var(--mo)">Buy</span></h2>
 <p class="cdesc">Compare the true long-term cost of renting versus buying.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -322,7 +323,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- ENERGY BILL -->
 <div id="p-en" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Energy Bill</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Energy Bill</div>
 <h2 class="ct">Energy <span style="color:var(--ho)">Bill</span></h2>
 <p class="cdesc">Estimate your monthly electricity bill based on your appliances.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -354,7 +355,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- PAINT -->
 <div id="p-pt" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Paint Coverage</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Paint Coverage</div>
 <h2 class="ct">Paint <span style="color:var(--ho)">Coverage</span></h2>
 <p class="cdesc">Work out exactly how many tins of paint you need.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -390,7 +391,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- MOVING COST -->
 <div id="p-mv" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Moving Cost</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Moving Cost</div>
 <h2 class="ct">Moving <span style="color:var(--ho)">Cost</span></h2>
 <p class="cdesc">Estimate your home moving costs.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -419,7 +420,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- BILLS SPLITTER -->
 <div id="p-bs" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Bills Splitter</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Bills Splitter</div>
 <h2 class="ct">Bills <span style="color:var(--ho)">Splitter</span></h2>
 <p class="cdesc">Split household bills fairly between housemates.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -444,7 +445,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- BMI -->
 <div id="p-bmi" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › BMI</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › BMI</div>
 <h2 class="ct">BMI & Healthy <span style="color:var(--he)">Weight</span></h2>
 <p class="cdesc">Calculate your Body Mass Index and healthy weight range.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -468,7 +469,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- CALORIE TARGET -->
 <div id="p-cal" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Calorie Target</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Calorie Target</div>
 <h2 class="ct">Daily Calorie <span style="color:var(--he)">Target</span></h2>
 <p class="cdesc">Find your daily calorie needs using the Mifflin-St Jeor equation.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -498,7 +499,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- FOOD CALORIES -->
 <div id="p-fc" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Food Calories</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Food Calories</div>
 <h2 class="ct">Food Calorie <span style="color:var(--he)">Lookup</span></h2>
 <p class="cdesc">Search any food and see calories, protein, carbs and fat per portion.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -523,7 +524,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- CALORIE DISTRIBUTION -->
 <div id="p-cd" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Calorie Distribution</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Calorie Distribution</div>
 <h2 class="ct">Calorie <span style="color:var(--he)">Distribution</span></h2>
 <p class="cdesc">Split your daily calories across meals throughout the day.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -546,7 +547,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- MACRO -->
 <div id="p-mac" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Macro Calculator</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Macro Calculator</div>
 <h2 class="ct">Macro <span style="color:var(--he)">Calculator</span></h2>
 <p class="cdesc">Break your daily calories into protein, carbs and fat.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -568,7 +569,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- PROTEIN -->
 <div id="p-pr" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Protein Calculator</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Protein Calculator</div>
 <h2 class="ct">Protein by Body <span style="color:var(--he)">Weight</span></h2>
 <p class="cdesc">Find out exactly how much protein you need daily.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -590,7 +591,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- WATER -->
 <div id="p-wa" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Water Intake</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Water Intake</div>
 <h2 class="ct">Daily Water <span style="color:var(--he)">Intake</span></h2>
 <p class="cdesc">How much water should you drink every day?</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -613,7 +614,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- COST PER MILE -->
 <div id="p-cpm" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Cost Per Mile</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Cost Per Mile</div>
 <h2 class="ct">Cost Per <span style="color:var(--tr)">Mile</span></h2>
 <p class="cdesc">Calculate the true cost of running your car per mile.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -646,7 +647,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- ROAD TRIP -->
 <div id="p-rt" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Road Trip</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Road Trip</div>
 <h2 class="ct">Road Trip <span style="color:var(--tr)">Cost</span></h2>
 <p class="cdesc">Calculate the full cost of a road trip.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -683,7 +684,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- TRIP BUDGET -->
 <div id="p-tb" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Trip Budget</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Trip Budget</div>
 <h2 class="ct">Trip Budget <span style="color:var(--tr)">Planner</span></h2>
 <p class="cdesc">Plan your full holiday budget.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -717,7 +718,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- FREELANCE -->
 <div id="p-fr" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Freelance Rate</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Freelance Rate</div>
 <h2 class="ct">Freelance <span style="color:var(--li)">Rate</span></h2>
 <p class="cdesc">Calculate the minimum hourly rate you need to charge.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -746,7 +747,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- TRUE WAGE -->
 <div id="p-tw" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › True Hourly Wage</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › True Hourly Wage</div>
 <h2 class="ct">True Hourly <span style="color:var(--li)">Wage</span></h2>
 <p class="cdesc">What do you actually earn per hour after commuting and work costs?</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -778,7 +779,7 @@ footer span{cursor:pointer;color:var(--tx2)}
 
 <!-- PENSION -->
 <div id="p-pe" class="pg"><div class="cp">
-<div class="bc"><span onclick="go()">CalHive</span> › Pension Pot</div>
+<div class="bc"><span onclick="goBack()">← Back</span> · <span onclick="go()">Home</span> › Pension Pot</div>
 <h2 class="ct">Pension <span style="color:var(--li)">Pot</span></h2>
 <p class="cdesc">Project how much your pension will be worth at retirement.</p>
 <div class="ad adl">[ Advertisement ]</div>
@@ -829,7 +830,28 @@ function go(){
   window.scrollTo(0,0);
 }
 
+
+var prevPage = 'home';
+var origTo = to;
 function to(n){
+  // figure out which category we came from
+  var catMap={thp:'money',mo:'money',sv:'money',ci:'money',ln:'money',rvb:'money',
+    en:'home',pt:'home',mv:'home',bs:'home',
+    bmi:'health',cal:'health',fc:'health',cd:'health',mac:'health',pr:'health',wa:'health',
+    cpm:'travel',rt:'travel',tb:'travel',
+    fr:'life',tw:'life',pe:'life'};
+  prevPage = catMap[n] || 'home';
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  var e=document.getElementById('p-'+n);
+  if(e){e.classList.add('on');window.scrollTo(0,0);}
+  else go();
+}
+function goBack(){
+  if(prevPage==='home') go();
+  else cat(prevPage);
+}
+
+function _unused_to(n){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
   var e=document.getElementById('p-'+n);
   if(e){e.classList.add('on');window.scrollTo(0,0);}
@@ -1204,5 +1226,73 @@ function cPE(){
   st('rPE3',fm(real,0));st('rPE4',fm(moIncome,0)+'/mo');
 }
 </script>
+
+<!-- MONEY CATEGORY -->
+<div id="p-money" class="pg"><div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem 5rem">
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem">
+<button onclick="go()" style="background:var(--sur);border:1px solid var(--bor);color:var(--tx2);padding:0.5rem 1rem;border-radius:var(--rs);cursor:pointer;font-family:var(--fm);font-size:0.78rem">← Back</button>
+<h2 style="font-size:1.8rem;font-weight:800;letter-spacing:-0.02em">💰 <span style="color:var(--mo)">Money</span> Calculators</h2>
+</div>
+<div class="cg">
+<div class="card" style="--ac:var(--mo)" onclick="to('thp')"><div class="kn">Take-Home Pay</div><div class="kd">Salary → after tax & deductions</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--mo)" onclick="to('mo')"><div class="kn">Mortgage Repayment</div><div class="kd">Loan, rate, term → monthly payment</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--mo)" onclick="to('sv')"><div class="kn">Savings Goal</div><div class="kd">Target amount → time to reach it</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--mo)" onclick="to('ci')"><div class="kn">Compound Interest</div><div class="kd">Lump sum + monthly → growth over years</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--mo)" onclick="to('ln')"><div class="kn">Loan Repayment</div><div class="kd">Amount, rate, term → monthly cost</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--mo)" onclick="to('rvb')"><div class="kn">Rent vs Buy</div><div class="kd">True cost comparison over time</div><span class="kar">→</span></div>
+</div></div></div>
+
+<!-- HOME CATEGORY -->
+<div id="p-home-cat" class="pg"><div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem 5rem">
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem">
+<button onclick="go()" style="background:var(--sur);border:1px solid var(--bor);color:var(--tx2);padding:0.5rem 1rem;border-radius:var(--rs);cursor:pointer;font-family:var(--fm);font-size:0.78rem">← Back</button>
+<h2 style="font-size:1.8rem;font-weight:800;letter-spacing:-0.02em">🏠 <span style="color:var(--ho)">Home</span> Calculators</h2>
+</div>
+<div class="cg">
+<div class="card" style="--ac:var(--ho)" onclick="to('en')"><div class="kn">Energy Bill</div><div class="kd">Appliances + usage → monthly cost</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--ho)" onclick="to('pt')"><div class="kn">Paint Coverage</div><div class="kd">Room dimensions → tins needed</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--ho)" onclick="to('mv')"><div class="kn">Moving Cost</div><div class="kd">Distance & volume → removal estimate</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--ho)" onclick="to('bs')"><div class="kn">Bills Splitter</div><div class="kd">Household costs → fair split per person</div><span class="kar">→</span></div>
+</div></div></div>
+
+<!-- HEALTH CATEGORY -->
+<div id="p-health-cat" class="pg"><div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem 5rem">
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem">
+<button onclick="go()" style="background:var(--sur);border:1px solid var(--bor);color:var(--tx2);padding:0.5rem 1rem;border-radius:var(--rs);cursor:pointer;font-family:var(--fm);font-size:0.78rem">← Back</button>
+<h2 style="font-size:1.8rem;font-weight:800;letter-spacing:-0.02em">🏋️ <span style="color:var(--he)">Health</span> Calculators</h2>
+</div>
+<div class="cg">
+<div class="card" style="--ac:var(--he)" onclick="to('bmi')"><div class="kn">BMI & Healthy Weight</div><div class="kd">Height, weight → BMI + ideal range</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--he)" onclick="to('cal')"><div class="kn">Daily Calorie Target</div><div class="kd">Age, weight, activity → calories</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--he)" onclick="to('fc')"><div class="kn">Food Calorie Lookup</div><div class="kd">Search any food → calories per portion</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--he)" onclick="to('cd')"><div class="kn">Calorie Distribution</div><div class="kd">Your calories → meal-by-meal split</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--he)" onclick="to('mac')"><div class="kn">Macro Calculator</div><div class="kd">Calories + goal → protein, carbs, fat</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--he)" onclick="to('pr')"><div class="kn">Protein by Body Weight</div><div class="kd">Weight + activity → protein target</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--he)" onclick="to('wa')"><div class="kn">Water Intake</div><div class="kd">Weight + activity → daily water target</div><span class="kar">→</span></div>
+</div></div></div>
+
+<!-- TRAVEL CATEGORY -->
+<div id="p-travel-cat" class="pg"><div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem 5rem">
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem">
+<button onclick="go()" style="background:var(--sur);border:1px solid var(--bor);color:var(--tx2);padding:0.5rem 1rem;border-radius:var(--rs);cursor:pointer;font-family:var(--fm);font-size:0.78rem">← Back</button>
+<h2 style="font-size:1.8rem;font-weight:800;letter-spacing:-0.02em">🚗 <span style="color:var(--tr)">Travel</span> Calculators</h2>
+</div>
+<div class="cg">
+<div class="card" style="--ac:var(--tr)" onclick="to('cpm')"><div class="kn">Cost Per Mile / km</div><div class="kd">Full car running cost breakdown</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--tr)" onclick="to('rt')"><div class="kn">Road Trip Cost</div><div class="kd">Distance, MPG, fuel → trip total</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--tr)" onclick="to('tb')"><div class="kn">Trip Budget Planner</div><div class="kd">Days, style, destination → full budget</div><span class="kar">→</span></div>
+</div></div></div>
+
+<!-- LIFE CATEGORY -->
+<div id="p-life-cat" class="pg"><div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem 5rem">
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem">
+<button onclick="go()" style="background:var(--sur);border:1px solid var(--bor);color:var(--tx2);padding:0.5rem 1rem;border-radius:var(--rs);cursor:pointer;font-family:var(--fm);font-size:0.78rem">← Back</button>
+<h2 style="font-size:1.8rem;font-weight:800;letter-spacing:-0.02em">⏱️ <span style="color:var(--li)">Life & Work</span> Calculators</h2>
+</div>
+<div class="cg">
+<div class="card" style="--ac:var(--li)" onclick="to('fr')"><div class="kn">Freelance Rate</div><div class="kd">Income target → hourly rate to charge</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--li)" onclick="to('tw')"><div class="kn">True Hourly Wage</div><div class="kd">Salary + costs → what you actually earn</div><span class="kar">→</span></div>
+<div class="card" style="--ac:var(--li)" onclick="to('pe')"><div class="kn">Pension Pot</div><div class="kd">Age, contributions → retirement pot</div><span class="kar">→</span></div>
+</div></div></div>
 </body>
 </html>
