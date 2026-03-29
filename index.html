@@ -1225,6 +1225,13 @@ function cPE(){
   st('rPE1',fm(nominal,0));st('rPE2','projected at age '+ret+' ('+yrs+' years away)');
   st('rPE3',fm(real,0));st('rPE4',fm(moIncome,0)+'/mo');
 }
+
+function cat(name){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  var map={money:'p-money',home:'p-home-cat',health:'p-health-cat',travel:'p-travel-cat',life:'p-life-cat'};
+  var el=document.getElementById(map[name]);
+  if(el){el.classList.add('on');window.scrollTo(0,0);}
+}
 </script>
 
 <!-- MONEY CATEGORY -->
