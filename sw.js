@@ -1,5 +1,5 @@
 // CalHive Service Worker — Offline Support
-const CACHE_NAME = 'calhive-v1';
+const CACHE_NAME = 'calhive-v2';
 const STATIC_ASSETS = [
   '/index.html',
   '/assets/css/style.css',
